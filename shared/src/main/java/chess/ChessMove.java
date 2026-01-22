@@ -1,5 +1,5 @@
 package chess;
-
+//getPromotionPiece how to check if there needs to be a promotion
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -8,22 +8,27 @@ package chess;
  */
 public class ChessMove {
 //Phase 0
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece) {
+    ChessPosition niceStart;
+    ChessPosition epicEnd;
+    ChessPiece.PieceType movedPieceType;
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
+        niceStart = startPosition;
+        epicEnd = endPosition;
+        movedPieceType = promotionPiece;
     }
 
     /**
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        throw new RuntimeException("Not implemented");
+        return niceStart;
     }
-
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        throw new RuntimeException("Not implemented");
+        return epicEnd;
     }
 
     /**
@@ -32,8 +37,13 @@ public class ChessMove {
      *
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
-    public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+    public ChessPiece.PieceType getPromotionPiece(ChessPiece.PieceType newType) {
+        if (movedPieceType == ChessPiece.PieceType.PAWN) {
+            if ((epicEnd.getRow()==8) || (epicEnd.getRow()==1)) {
+                return newType;
+            }
+        }
+        return null;
     }
 } // do not create a subclass for each subclass, it will make it harder later
 // instead of inheriting chess pieces just give it a color and type and create a different set of classes to calculate the moves
