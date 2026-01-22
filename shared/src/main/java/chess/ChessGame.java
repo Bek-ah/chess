@@ -9,7 +9,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-
+// PHASE 1
     public ChessGame() {
 
     }

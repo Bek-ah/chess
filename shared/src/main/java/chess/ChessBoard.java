@@ -7,9 +7,11 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+//Phase 0
     public ChessBoard() {
-        
+        //dictionary with a tuple? {(1,1),"EMPTY"}, {(1,2),"KING"}
+        //array, 8x8 64 values harder math
+        //maybe 2 arrays of 8 values?
     }
 
     /**
@@ -20,6 +22,8 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
+        // update dictionary position and piece
+        // look at what the position format the tests give, interpret to position understood by chessboard
     }
 
     /**
@@ -31,6 +35,8 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         throw new RuntimeException("Not implemented");
+        // return value of position in chessboard
+
     }
 
     /**
@@ -38,6 +44,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+
+        // getpiece() for all pieces (can hardcode both sides or do math ig)
     }
 }

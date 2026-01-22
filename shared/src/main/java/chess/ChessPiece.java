@@ -1,5 +1,5 @@
 package chess;
-
+//Phase 0
 import java.util.Collection;
 
 /**
@@ -11,6 +11,8 @@ import java.util.Collection;
 public class ChessPiece {
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        throw new RuntimeException("Not implemented");
+
     }
 
     /**
