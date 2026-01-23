@@ -24,49 +24,51 @@ public class KingMoves {
         ChessPosition pos = new ChessPosition(1, 1);
         pos.setRow(startPosition.getRow()+1);
         pos.setCol(startPosition.getColumn());
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible up
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible up
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setCol(pos.getColumn() - 1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible diagonal upper left
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible diagonal upper left
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setRow(pos.getRow()-1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible left
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible left
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setRow(pos.getRow()-1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible diagonal lower left
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible diagonal lower left
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setCol(pos.getColumn()+1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible down
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible down
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setCol(pos.getColumn()+1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible diagonal lower right
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible diagonal lower right
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setRow(pos.getRow()+1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible right
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible right
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
         pos.setRow(pos.getRow()+1);
-        if (inBounds(pos) && isItAvailable(startBoard, pos)) { // add possible diagonal upper right
+        if (inBounds(pos) && isItAvailable(startBoard, pos, startPosition)) { // add possible diagonal upper right
             possibleEndings.add(new ChessPosition(pos.getRow(), pos.getColumn()));
         }
     }
     public boolean inBounds(ChessPosition subject) {
-        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 0) && (subject.myRow >= 0)){
+        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 1) && (subject.myRow >= 1)){
             return true;
         }
         return false;
     }
 
-    public boolean isItAvailable(ChessBoard fightBoard, ChessPosition square){
-        if (fightBoard.getPiece(square) != null){
-            return false;
+    public boolean isItAvailable(ChessBoard fightBoard, ChessPosition square, ChessPosition start){
+        if (fightBoard.getPiece(square) == null){
+            return true;
+        } else if (fightBoard.getPiece(square).getTeamColor() != fightBoard.getPiece(start).getTeamColor()){
+            return true;
         }
-        return true;
+        return false;
     }
 }

@@ -38,7 +38,7 @@ public class ChessPosition {
         myRow = newRow;
     }
     public void setCol(int newCol) {
-        myRow = newCol;
+        myCol = newCol;
     }
 
     @Override
