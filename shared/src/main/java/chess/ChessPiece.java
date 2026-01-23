@@ -1,6 +1,8 @@
 package chess;
 //Phase 0
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -10,9 +12,26 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        throw new RuntimeException("Not implemented");
+    PieceType myType;
+    ChessGame.TeamColor myColor;
 
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        myType = type;
+        myColor = pieceColor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return myType == that.myType && myColor == that.myColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(myType, myColor);
     }
 
     /**
@@ -31,14 +50,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return myColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return myType;
     }
 
     /**
@@ -49,6 +68,23 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece currentPiece = board.getPiece(myPosition);
+        switch (currentPiece.getPieceType()) {
+            //CHECK THAT THE getCol setCol are matching
+            case PieceType.PAWN: //promotion need updated
+                return new PawnMove().listMoves(board, myPosition);
+            case PieceType.BISHOP: //should be done //
+                return new BishopMoves().listMoves(board, myPosition);
+            case PieceType.ROOK: //should be done //
+                return new RookMoves().listMoves(board, myPosition);
+            case PieceType.KING: //should be done //
+                return new KingMoves().listMoves(board, myPosition);
+            case PieceType.QUEEN: //should be done//
+                return new QueenMoves().listMoves(board, myPosition);
+            case PieceType.KNIGHT: //should be done //
+                return new KnightMoves().listMoves(board, myPosition);
+            default:
+                return Collections.emptyList();
+        }
     }
 }
