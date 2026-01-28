@@ -100,10 +100,7 @@ public class QueenMoves {
         return Objects.hash(possibleEndings, currentPiece);
     }
     public boolean inBounds(ChessPosition subject) {
-        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 1) && (subject.myRow >= 1)){
-            return true;
-        }
-        return false;
+        return (subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 1) && (subject.myRow >= 1);
     }
 
     public boolean isItAvailable(ChessBoard fightBoard, ChessPosition square, ChessPosition start){

@@ -33,23 +33,24 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        if (myBoard.get(position) == null) { // check if space is occupied
-            if (inBounds(position)) { // check if position is on the board
-                myBoard.put(position, piece);
-            }
+        if (inBounds(position)) { // check if position is on the board
+            myBoard.put(position, piece);
         }
-        // Add an error?
-        // update dictionary position and piece
-        // look at what the position format the tests give, interpret to position understood by chessboard
+    }
+    public void removePiece(ChessPosition position) {
+        if (inBounds(position)) {
+            myBoard.remove(position);
+        }
     }
 
-    /**
-     * Gets a chess piece on the chessboard
-     *
-     * @param position The position to get the piece from
-     * @return Either the piece at the position, or null if no piece is at that
-     * position
-     */
+
+        /**
+         * Gets a chess piece on the chessboard
+         *
+         * @param position The position to get the piece from
+         * @return Either the piece at the position, or null if no piece is at that
+         * position
+         */
     public ChessPiece getPiece(ChessPosition position) {
         return myBoard.get(position); // return value of position in chessboard
     }

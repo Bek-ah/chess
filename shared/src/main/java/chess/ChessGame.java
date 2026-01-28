@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,6 +11,23 @@ import java.util.Collection;
  */
 public class ChessGame {
 // PHASE 1
+    TeamColor turn;
+    ChessBoard myBoard;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return turn == chessGame.turn && Objects.equals(myBoard, chessGame.myBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turn, myBoard);
+    }
+
     public ChessGame() {
 
     }
@@ -18,7 +36,14 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        if (turn == TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+            return TeamColor.WHITE;
+        } else if (turn == TeamColor.BLACK){
+            setTeamTurn(TeamColor.WHITE);
+            return TeamColor.BLACK;
+        };
+        return null;
     }
 
     /**
@@ -27,7 +52,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -46,7 +71,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece myPiece = myBoard.getPiece(startPosition);
+        //add checks for if King is in check
+        return myPiece.pieceMoves(myBoard,startPosition);
     }
 
     /**
@@ -56,7 +83,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        //add if invalid checks
+        chess.ChessPiece piece = myBoard.getPiece(move.getStartPosition());
+        myBoard.addPiece(move.getEndPosition(), piece);
+        myBoard.removePiece(move.getStartPosition());
     }
 
     /**
@@ -96,7 +126,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        myBoard = board;
     }
 
     /**
@@ -105,6 +135,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return myBoard;
     }
 }
