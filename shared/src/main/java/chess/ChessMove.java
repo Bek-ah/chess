@@ -50,7 +50,8 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(niceStart, chessMove.niceStart) && Objects.equals(epicEnd, chessMove.epicEnd) && movedPieceType == chessMove.movedPieceType;
+        boolean x = Objects.equals(niceStart, chessMove.niceStart);
+        return x && Objects.equals(epicEnd, chessMove.epicEnd) && movedPieceType == chessMove.movedPieceType;
     }
 
     @Override

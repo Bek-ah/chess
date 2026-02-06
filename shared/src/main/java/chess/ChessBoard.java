@@ -14,10 +14,7 @@ public class ChessBoard {
     HashMap<ChessPosition, ChessPiece> myBoard = new HashMap<>();
 
     public boolean inBounds(ChessPosition subject) {
-        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 0) && (subject.myRow >= 0)){
-            return true;
-        }
-        return false;
+        return (subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 0) && (subject.myRow >= 0);
     }
 
     public ChessBoard() {
