@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class KnightMoves {
     ArrayList<ChessPosition> possibleEndings = new ArrayList<ChessPosition>();
     ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
-    ChessPiece currentPiece;
 
     public ArrayList<ChessPosition> listMoveEnds(ChessBoard startBoard, ChessPosition startPosition) {
         calculatePossibilities(startBoard, startPosition);

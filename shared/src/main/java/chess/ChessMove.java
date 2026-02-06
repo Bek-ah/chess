@@ -41,14 +41,7 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        ChessPiece.PieceType newType;
-        if (movedPieceType == ChessPiece.PieceType.PAWN) {
-            if ((epicEnd.getRow()==8) || (epicEnd.getRow()==1)) {
-                // do I need to get input from the user here?
-                return ChessPiece.PieceType.QUEEN;
-            }
-        }
-        return null;
+        return movedPieceType;
     }
 
     @Override
