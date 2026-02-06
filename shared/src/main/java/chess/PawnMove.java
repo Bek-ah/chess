@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class PawnMove {
 
-    ArrayList<ChessMove> posMoves = new ArrayList<ChessMove>();
+    ArrayList<ChessMove> posMoves = new ArrayList<>();
 
-    public ArrayList<ChessMove> listMoves(ChessPosition startPos, ChessBoard board) {
+    public ArrayList<ChessMove> listMoves(ChessBoard board, ChessPosition startPos) {
         ChessPosition pos = new ChessPosition(1, 1);
         boolean forward = false;
         pos.setRow(startPos.getRow());
@@ -101,21 +101,12 @@ public class PawnMove {
     public boolean isAvailable(ChessPosition start, ChessPosition pos, ChessBoard board){
         if (board.getPiece(pos) == null){
             return true;
-        } else if (board.getPiece(pos).getTeamColor() != board.getPiece(start).getTeamColor()){
-            return true;
-        }
-        return false;
+        } else return board.getPiece(pos).getTeamColor() != board.getPiece(start).getTeamColor();
     }
     public boolean isEmpty(ChessPosition pos, ChessBoard board){
-        if (board.getPiece(pos) == null){
-            return true;
-        }
-        return false;
+        return board.getPiece(pos) == null;
     }
     public boolean inBounds(ChessPosition pos){
-        if(pos.getRow()>0 && pos.getColumn()>0 && pos.getRow()<9 && pos.getColumn()<9){
-            return true;
-        }
-        return false;
+        return pos.getRow() > 0 && pos.getColumn() > 0 && pos.getRow() < 9 && pos.getColumn() < 9;
     }
 }
