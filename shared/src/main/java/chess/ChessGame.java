@@ -11,6 +11,7 @@ import java.util.*;
 public class ChessGame {
     TeamColor turn = TeamColor.WHITE;
     ChessBoard myBoard;
+    boolean canCastle = true;
 
     public ChessGame() {
         myBoard = new ChessBoard();
@@ -111,6 +112,9 @@ public class ChessGame {
                 myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), myBoard.getPiece(move.getStartPosition()).getPieceType()));
             } else {
                 if(move.getPromotionPiece()!=null){
+                    if(move.movedPieceType == ChessPiece.PieceType.KING){
+                        canCastle = false;
+                    }
                     myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
                 } else {
                     myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), myBoard.getPiece(move.getStartPosition()).getPieceType()));
