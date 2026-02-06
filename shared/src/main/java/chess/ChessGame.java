@@ -138,8 +138,12 @@ public class ChessGame {
         ChessPosition king = findKing(teamColor, myBoard);
         for (ChessPosition p : myBoard.myBoard.keySet()){ // for each piece
             if (myBoard.getPiece(p).getTeamColor() != teamColor) { //on the enemy team
-                Collection<ChessMove> possibilities = myBoard.getPiece(p).pieceMoves(myBoard, p);
-                if (possibilities.contains(new ChessMove(p,king,null))){
+                Collection<ChessMove> possMoves = myBoard.getPiece(p).pieceMoves(myBoard, p);
+                ArrayList<ChessPosition> possibilities = new ArrayList<>();
+                for (ChessMove m : possMoves){
+                    possibilities.add(m.getEndPosition());
+                }
+                if (possibilities.contains(king)){
                     return true;
                 }
             }
@@ -168,7 +172,7 @@ public class ChessGame {
         if (isInCheck(teamColor)){
             for (ChessPosition pos : myBoard.myBoard.keySet()){
                 if (myBoard.getPiece(pos).getTeamColor()==turn) { //if it is current player's piece
-                    if (validMoves(pos).size() >= 1) {  //if the piece can move
+                    if (!validMoves(pos).isEmpty()) {  //if the piece can move
                         return false;                   //not in checkmate
                     }
                 }
