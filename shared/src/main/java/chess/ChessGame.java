@@ -80,7 +80,8 @@ public class ChessGame {
             //in imagination board, make the move and see if it is in check
             if (m.getPromotionPiece()==null) {
                 ChessPosition newPosition = new ChessPosition(m.getEndPosition().getRow(), m.getEndPosition().getColumn());
-                ChessPiece newPiece = new ChessPiece(myBoard.getPiece(m.getStartPosition()).getTeamColor(), myBoard.getPiece(m.getStartPosition()).getPieceType());
+                TeamColor team = myBoard.getPiece(m.getStartPosition()).getTeamColor();
+                ChessPiece newPiece = new ChessPiece(team, myBoard.getPiece(m.getStartPosition()).getPieceType());
                 imagination.getBoard().addPiece(newPosition, newPiece);
                 imagination.getBoard().removePiece(m.getStartPosition());
             } else {
