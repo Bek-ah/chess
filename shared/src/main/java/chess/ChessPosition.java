@@ -41,6 +41,24 @@ public class ChessPosition {
         myCol = newCol;
     }
 
+    public boolean inBounds(ChessPosition subject) {
+        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 1) && (subject.myRow >= 1)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isItAvailable(ChessBoard fightBoard, ChessPosition square, ChessPosition start){
+        if (fightBoard.getPiece(square) == null){
+            return true;
+        } else if (fightBoard.getPiece(square).getTeamColor() != fightBoard.getPiece(start).getTeamColor()){
+            return true;
+        }
+        return false;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

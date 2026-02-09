@@ -27,7 +27,7 @@ public class BishopMoves {
         ChessPosition pos = new ChessPosition(1,1);
         pos.setRow(startPosition.getRow()-1);
         pos.setCol(startPosition.getColumn()-1);
-        while(inBounds(pos) && !captured && isItAvailable(startBoard, pos, startPosition)) { // add possible going down and left
+        while(pos.inBounds(pos) && !captured && isItAvailCaptured(startBoard, pos, startPosition)) { // add possible going down and left
             possibleEndings.add(new ChessPosition(pos.getRow(),pos.getColumn()));
             pos.setRow(pos.getRow()-1);
             pos.setCol(pos.getColumn()-1);
@@ -35,7 +35,7 @@ public class BishopMoves {
         pos.setRow(startPosition.getRow()+1);
         pos.setCol(startPosition.getColumn()+1);
         captured = false;
-        while(inBounds(pos) && !captured && isItAvailable(startBoard, pos, startPosition)) { // add possible going up and right
+        while(pos.inBounds(pos) && !captured && isItAvailCaptured(startBoard, pos, startPosition)) { // add possible going up and right
             possibleEndings.add(new ChessPosition(pos.getRow(),pos.getColumn()));
             pos.setRow(pos.getRow()+1);
             pos.setCol(pos.getColumn()+1);
@@ -43,7 +43,7 @@ public class BishopMoves {
         pos.setRow(startPosition.getRow()+1);
         pos.setCol(startPosition.getColumn()-1);
         captured = false;
-        while(inBounds(pos) && !captured && isItAvailable(startBoard, pos, startPosition)) { // add possible going up and left
+        while(pos.inBounds(pos) && !captured && isItAvailCaptured(startBoard, pos, startPosition)) { // add possible going up and left
             possibleEndings.add(new ChessPosition(pos.getRow(),pos.getColumn()));
             pos.setRow(pos.getRow()+1);
             pos.setCol(pos.getColumn()-1);
@@ -51,21 +51,13 @@ public class BishopMoves {
         pos.setRow(startPosition.getRow()-1);
         pos.setCol(startPosition.getColumn()+1);
         captured = false;
-        while(inBounds(pos) && !captured && isItAvailable(startBoard, pos, startPosition)) { // add possible going down and right
+        while(pos.inBounds(pos) && !captured && isItAvailCaptured(startBoard, pos, startPosition)) { // add possible going down and right
             possibleEndings.add(new ChessPosition(pos.getRow(),pos.getColumn()));
             pos.setRow(pos.getRow()-1);
             pos.setCol(pos.getColumn()+1);
         }
     }
-
-    public boolean inBounds(ChessPosition subject) {
-        if ((subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 1) && (subject.myRow >= 1)){
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isItAvailable(ChessBoard fightBoard, ChessPosition square, ChessPosition start){
+    public boolean isItAvailCaptured(ChessBoard fightBoard, ChessPosition square, ChessPosition start){
         if (fightBoard.getPiece(square) == null){
             return true;
         } else if (fightBoard.getPiece(square).getTeamColor() != fightBoard.getPiece(start).getTeamColor()){
@@ -74,6 +66,7 @@ public class BishopMoves {
         }
         return false;
     }
+
 
     @Override
     public boolean equals(Object o) {

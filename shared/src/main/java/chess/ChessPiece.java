@@ -80,7 +80,7 @@ public class ChessPiece {
             case PieceType.KING: //should be done //
                 return new KingMoves().listMoves(board, myPosition);
             case PieceType.QUEEN: //should be done//
-                return new QueenMoves().listMoves(board, myPosition);
+                return new QueenMoves().listMoves(myPosition, board);
             case PieceType.KNIGHT: //should be done //
                 return new KnightMoves().listMoves(board, myPosition);
             default:

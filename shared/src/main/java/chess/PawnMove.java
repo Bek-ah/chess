@@ -5,8 +5,10 @@ import java.util.ArrayList;
 public class PawnMove {
 
     ArrayList<ChessMove> posMoves = new ArrayList<>();
+    ChessBoard myBoard = new ChessBoard();
 
     public ArrayList<ChessMove> listMoves(ChessBoard board, ChessPosition startPos) {
+        myBoard = board;
         ChessPosition pos = new ChessPosition(1, 1);
         boolean forward = false;
         pos.setRow(startPos.getRow());
@@ -15,38 +17,17 @@ public class PawnMove {
             pos.setRow(startPos.getRow()+1);
             if (isEmpty(pos,board)){
                 forward = true;
-                if (pos.getRow()!=8) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+                addPromotions(pos,startPos);
             }
             pos.setRow(startPos.getRow()+1);
             pos.setCol(startPos.getColumn()+1);//diagonal right
-            if (isAvailable(startPos,pos,board) && inBounds(pos) && !isEmpty(pos,board)){
-                if (pos.getRow()!=8) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+            if (isAvailable(startPos,pos,board) && pos.inBounds(pos) && !isEmpty(pos,board)){
+                addPromotions(pos,startPos);
             }
             pos.setRow(startPos.getRow()+1);
             pos.setCol(startPos.getColumn()-1);//diagonal left
-            if (isAvailable(startPos,pos,board) && inBounds(pos) && !isEmpty(pos,board)){
-                if (pos.getRow()!=8) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+            if (isAvailable(startPos,pos,board) && pos.inBounds(pos) && !isEmpty(pos,board)){
+                addPromotions(pos,startPos);
             }
             ChessPosition forward2 = new ChessPosition(startPos.getRow()+2,startPos.getColumn());
             if (startPos.getRow()==2 && forward && isEmpty(forward2,board)){
@@ -56,38 +37,17 @@ public class PawnMove {
             pos.setRow(startPos.getRow()-1);
             if (isEmpty(pos,board)){
                 forward = true;
-                if (pos.getRow()!=1) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+                addPromotions(pos,startPos);
             }
             pos.setRow(startPos.getRow()-1);
             pos.setCol(startPos.getColumn()+1);//diagonal right
-            if (isAvailable(startPos,pos,board) && inBounds(pos) && !isEmpty(pos,board)){
-                if (pos.getRow()!=1) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+            if (isAvailable(startPos,pos,board) && pos.inBounds(pos) && !isEmpty(pos,board)){
+                addPromotions(pos,startPos);
             }
             pos.setRow(startPos.getRow()-1);
             pos.setCol(startPos.getColumn()-1);//diagonal left
-            if (isAvailable(startPos,pos,board) && inBounds(pos) && !isEmpty(pos,board)){
-                if (pos.getRow()!=1) {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
-                } else {
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
-                    posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
-                }
+            if (isAvailable(startPos,pos,board) && pos.inBounds(pos) && !isEmpty(pos,board)){
+                addPromotions(pos,startPos);
             }
             pos.setRow(startPos.getRow()-2);
             pos.setCol(startPos.getColumn());
@@ -106,7 +66,21 @@ public class PawnMove {
     public boolean isEmpty(ChessPosition pos, ChessBoard board){
         return board.getPiece(pos) == null;
     }
-    public boolean inBounds(ChessPosition pos){
-        return pos.getRow() > 0 && pos.getColumn() > 0 && pos.getRow() < 9 && pos.getColumn() < 9;
+
+    public void addPromotions(ChessPosition pos, ChessPosition startPos){
+        ChessGame.TeamColor team = myBoard.getPiece(startPos).getTeamColor();
+        boolean whitePromo = pos.getRow()==8;
+        boolean isWhite = team == ChessGame.TeamColor.WHITE;
+        boolean isBlack = team == ChessGame.TeamColor.BLACK;
+        boolean blackPromo = pos.getRow()==1;
+        if ((isWhite && !whitePromo) || (isBlack && !blackPromo)) {
+            posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()),null));
+        } else {
+            posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.QUEEN));
+            posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.KNIGHT));
+            posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.BISHOP));
+            posMoves.add(new ChessMove(startPos, new ChessPosition(pos.getRow(),pos.getColumn()), ChessPiece.PieceType.ROOK));
+        }
     }
+
 }
