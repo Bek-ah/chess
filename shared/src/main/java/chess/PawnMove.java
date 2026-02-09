@@ -61,7 +61,7 @@ public class PawnMove {
     public boolean isAvailable(ChessPosition start, ChessPosition pos, ChessBoard board){
         if (board.getPiece(pos) == null){
             return true;
-        } else return board.getPiece(pos).getTeamColor() != board.getPiece(start).getTeamColor();
+        } else { return board.getPiece(pos).getTeamColor() != board.getPiece(start).getTeamColor();}
     }
     public boolean isEmpty(ChessPosition pos, ChessBoard board){
         return board.getPiece(pos) == null;

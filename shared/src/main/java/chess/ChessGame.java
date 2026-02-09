@@ -118,18 +118,15 @@ public class ChessGame {
                 myBoard.addPiece(newPos, newPi);
             } else {
                 if(move.getPromotionPiece()!=null){
+                    boolean rookStart = move.getStartPosition().getColumn()==1 || move.getStartPosition().getColumn()==8;
                     if(move.movedPieceType == ChessPiece.PieceType.KING){
                         kingCanCastle = false;
                     }
-                    if(move.movedPieceType == ChessPiece.PieceType.ROOK){
-                        if(move.getStartPosition().getColumn()==1) {
-                            lRCanCastle = false;
-                        }
+                    if(move.movedPieceType == ChessPiece.PieceType.ROOK && rookStart){
+                        lRCanCastle = false;
                     }
-                    if(move.movedPieceType == ChessPiece.PieceType.KING){
-                        if(move.getStartPosition().getColumn()==8) {
-                            rRCanCastle = false;
-                        }
+                    if(move.movedPieceType == ChessPiece.PieceType.KING && rookStart){
+                        rRCanCastle = false;
                     }
                     myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
                 } else {
