@@ -84,7 +84,9 @@ public class ChessGame {
                 imagination.getBoard().addPiece(newPosition, newPiece);
                 imagination.getBoard().removePiece(m.getStartPosition());
             } else {
-                imagination.getBoard().addPiece(new ChessPosition(m.getEndPosition().getRow(), m.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(m.getStartPosition()).getTeamColor(), m.getPromotionPiece()));
+                ChessPosition posit = new ChessPosition(m.getEndPosition().getRow(), m.getEndPosition().getColumn());
+                ChessPiece tempPiece = new ChessPiece(myBoard.getPiece(m.getStartPosition()).getTeamColor(), m.getPromotionPiece());
+                imagination.getBoard().addPiece(posit, tempPiece);
                 imagination.getBoard().removePiece(m.getStartPosition());
             }
             if (!imagination.isInCheck(imagination.getBoard().getPiece(m.getEndPosition()).getTeamColor())){
@@ -114,7 +116,8 @@ public class ChessGame {
             //move piece
             if (move.getPromotionPiece() == null) {
                 ChessPosition newPos = new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn());
-                ChessPiece newPi = new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), myBoard.getPiece(move.getStartPosition()).getPieceType());
+                ChessPiece.PieceType type = myBoard.getPiece(move.getStartPosition()).getPieceType();
+                ChessPiece newPi = new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), type);
                 myBoard.addPiece(newPos, newPi);
             } else {
                 if(move.getPromotionPiece()!=null){
@@ -128,9 +131,12 @@ public class ChessGame {
                     if(move.movedPieceType == ChessPiece.PieceType.KING && rookStart){
                         rRCanCastle = false;
                     }
-                    myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
+                    ChessPiece temp = new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece());
+                    myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), temp);
                 } else {
-                    myBoard.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()), new ChessPiece(myBoard.getPiece(move.getStartPosition()).getTeamColor(), myBoard.getPiece(move.getStartPosition()).getPieceType()));
+                    ChessPosition post = new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn());
+                    TeamColor color = myBoard.getPiece(move.getStartPosition()).getTeamColor();
+                    myBoard.addPiece(post, new ChessPiece(color, myBoard.getPiece(move.getStartPosition()).getPieceType()));
                 }
             }
             myBoard.myBoard.remove(move.getStartPosition());
