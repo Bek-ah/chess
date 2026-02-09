@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class QueenMoves {
 
-
     ArrayList<ChessMove> posMoves = new ArrayList<ChessMove>();
 
     public ArrayList<ChessMove> listMoves(ChessPosition startPos, ChessBoard board){
