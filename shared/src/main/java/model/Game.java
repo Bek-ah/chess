@@ -1,0 +1,56 @@
+package model;
+
+import chess.ChessGame;import java.util.Objects;
+
+public class Game {
+    private final Integer gameID;
+    private String whiteUsername;
+    private String blackUsername;
+    private final String gameName;
+    private final ChessGame game;
+
+    public Game(Integer gID, String gn){
+        this.gameID = gID;
+        this.gameName = gn;
+        this.game = new ChessGame();
+    }
+@Override public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+        return false;
+    }
+    Game game1 = (Game) o;
+    return Objects.equals(gameID, game1.gameID) && Objects.equals(whiteUsername, game1.whiteUsername) && Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
+}@Override
+public int hashCode() {
+    return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
+}public boolean setWhitePlayer(String name){
+        /*if (whiteUsername != null){
+            //throw exception
+        } else {*/
+        this.whiteUsername = name;
+        return true;
+    }
+    public boolean setBlackPlayer(String name){
+        /*if (blackUsername != null){
+            //throw exception
+        } else {*/
+        this.blackUsername = name;
+        return true;
+    }
+    public int getID(){
+        return gameID;
+    }
+    public String getName() { return gameName; }
+    public String getWhiteUsername(){ return whiteUsername; }
+    public String getBlackUsername(){ return blackUsername; }
+    public ChessGame getGame(){ return game; }
+
+@Override public String toString() {
+    return "Game{" +
+            "gameID=" + gameID +
+            ", whiteUsername='" + whiteUsername + '\'' +
+            ", blackUsername='" + blackUsername + '\'' +
+            ", gameName='" + gameName + '\'' +
+            ", game=" + game +
+            '}';
+}}
