@@ -7,6 +7,9 @@ import model.*;
 
 import java.rmi.AlreadyBoundException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class ChessService {
     private final DataAccess dataAccess;
@@ -23,9 +26,22 @@ public class ChessService {
             throw new AlreadyBoundException();
         }
     }
+    public String createUser(User userData){
+        dataAccess.createUser(userData);
+        return userData.userName();
+    }
+    public Auth createAuth(String username){//TODO: change to param type Auth
+        String authToken = UUID.randomUUID().toString();
+        dataAccess.createAuth(username, authToken);
+        return dataAccess.getAuthbyToken(authToken);
+    }
     public void deleteAllGames() throws ResponseParseException{
         dataAccess.deleteAllAuth();
         dataAccess.deleteAllUsers();
         dataAccess.deleteAllGames();
+    }
+    public Collection<Game> getAllMyGames(){
+        HashMap<Integer,Game> gameHash = dataAccess.getAllGames();
+        return gameHash.values();
     }
 }

@@ -3,6 +3,9 @@ package dataaccess;
 import model.*;
 
 import server.DataBase;
+
+import java.util.HashMap;
+
 public class DataAccess {
     DataBase myDataBase = new DataBase();
     //CREATE
@@ -26,7 +29,16 @@ public class DataAccess {
         //if doesn't exist, throw unauthorized error
         return myDataBase.getAuthbyToken(token);
     }
-
+    //GET ALL
+    public HashMap<String, User> getAllUsers(){
+        return myDataBase.getUserTable();
+    }
+    public HashMap<String, Auth> getAllAuth(){
+        return myDataBase.getAuthTable();
+    }
+    public HashMap<Integer, Game> getAllGames(){
+        return myDataBase.getGameTable();
+    }
     //CLEAR 1
     /*void deleteUser(String username) {
         userTable.remove(username);

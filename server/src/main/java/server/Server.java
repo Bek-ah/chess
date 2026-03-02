@@ -12,6 +12,7 @@ import service.ChessService.*;
 
 import java.net.http.WebSocket;
 import java.rmi.AlreadyBoundException;
+//import static com.sun.tools.javac.jvm.ByteCodes.ret;
 
 public class Server {
     private final Javalin javalin;
@@ -34,12 +35,18 @@ public class Server {
         javalin.stop();
     }
     private void deleteAllGames(Context ctx) throws ResponseParseException {
-        service.deleteAllGames();
+        new ClearHandler();
         ctx.status(200);
     }
-    private String register(Context ctx) throws AlreadyBoundException {
-        String ret = service.getUser(ctx.body());
+    private void register(Context ctx) throws AlreadyBoundException {
+        RegisterHandler reg = new RegisterHandler(ctx.bodyAsClass(User.class));
+       // Context ret = reg.register(ctx.bodyAsClass(User.class));
         ctx.status(200);
-        return ret;
+       // return ret;
+    }
+    private void getGames(Context ctx){
+        ListGamesHandler list = new ListGamesHandler(ctx.bodyAsClass(Auth.class));
+        list.getGameList();
+        ctx.status(200);
     }
 }
