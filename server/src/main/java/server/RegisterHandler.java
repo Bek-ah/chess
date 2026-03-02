@@ -1,5 +1,6 @@
 package server;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import model.*;
 import service.ChessService;
@@ -10,13 +11,12 @@ import java.util.Map;
 
 public class RegisterHandler {
     final private DataAccess myDataAccess = new DataAccess();
-    public RegisterHandler(User user) throws AlreadyBoundException {
+    public RegisterHandler() throws AlreadyBoundException {
     }
-    public Context register(User user, Context ctx) throws AlreadyBoundException {
+    public Auth register(String body) throws AlreadyBoundException {
+        User user = new Gson().fromJson(body, User.class);
         ChessService currentService = new ChessService(myDataAccess);
-        currentService.getUser(user.userName());
-        String newUser = currentService.createUser(user);
-        String newAuth = currentService.createAuth(user.userName()).authtoken();
-        return ctx.json(Map.of(newUser,newAuth));
+        currentService.regUser(user);//TODO: move this logic to be inside createUser logic in ChessService
+        return currentService.createAuth(user.userName());
     }
 }

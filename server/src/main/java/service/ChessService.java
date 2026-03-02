@@ -5,7 +5,7 @@ import dataaccess.DataAccess;
 import passoff.exception.ResponseParseException;
 import model.*;
 
-import java.rmi.AlreadyBoundException;
+import java.nio.channels.AlreadyBoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -17,20 +17,26 @@ public class ChessService {
     public ChessService(DataAccess dataAccess){
         this.dataAccess = dataAccess;
     }
-    public User getUser(String username) throws AlreadyBoundException {
-        User returnData = dataAccess.getUserbyUsername(username);
-        if (dataAccess.getUserbyUsername(username)==null){
-            dataAccess.createUser(returnData);
-            return returnData;
+    public Auth regUser(User userData){
+        if(getUser(userData) == null){
+            createUser(userData);
+            return createAuth(userData.userName());
         } else {
-            throw new AlreadyBoundException();
+            return null;
         }
     }
-    public String createUser(User userData){
-        dataAccess.createUser(userData);
-        return userData.userName();
+    public User getUser(User userData) {
+        User returnData = dataAccess.getUserbyUsername(userData.userName());
+        if (returnData==null){
+            return null;
+        } else {
+            return userData;
+        }
     }
-    public Auth createAuth(String username){//TODO: change to param type Auth
+    public void createUser(User userData){
+        dataAccess.createUser(userData);
+    }
+    public Auth createAuth(String username){
         String authToken = UUID.randomUUID().toString();
         dataAccess.createAuth(username, authToken);
         return dataAccess.getAuthbyToken(authToken);

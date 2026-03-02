@@ -37,12 +37,19 @@ public class Server {
     private void deleteAllGames(Context ctx) throws ResponseParseException {
         new ClearHandler();
         ctx.status(200);
+        User test = new User("testName", "myPassword","me@me.com");
+        String text2 = new Gson().toJson(test);
+        ctx.result(text2);
     }
     private void register(Context ctx) throws AlreadyBoundException {
-        RegisterHandler reg = new RegisterHandler(ctx.bodyAsClass(User.class));
-       // Context ret = reg.register(ctx.bodyAsClass(User.class));
-        ctx.status(200);
-       // return ret;
+        try {
+            ctx.status(200);
+            Auth obj = new RegisterHandler().register(ctx.body());
+            String bodyText = new Gson().toJson(obj);
+            ctx.result(bodyText);
+        } catch (AlreadyBoundException e){
+            ctx.status(403).result("Error: username already taken");
+        }
     }
     private void getGames(Context ctx){
         ListGamesHandler list = new ListGamesHandler(ctx.bodyAsClass(Auth.class));
