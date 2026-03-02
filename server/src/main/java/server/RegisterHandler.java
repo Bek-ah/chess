@@ -3,20 +3,24 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import model.*;
+import org.opentest4j.AssertionFailedError;
 import service.ChessService;
-import io.javalin.Javalin;
-import io.javalin.http.Context;
+
 import java.rmi.AlreadyBoundException;
-import java.util.Map;
 
 public class RegisterHandler {
-    final private DataAccess myDataAccess = new DataAccess();
-    public RegisterHandler() throws AlreadyBoundException {
+    //final private DataAccess myDataAccess = ;
+    public RegisterHandler() throws AssertionFailedError {
     }
-    public Auth register(String body) throws AlreadyBoundException {
+    public Auth register(String body, DataAccess dataAccess) throws AssertionFailedError {
         User user = new Gson().fromJson(body, User.class);
-        ChessService currentService = new ChessService(myDataAccess);
-        currentService.regUser(user);//TODO: move this logic to be inside createUser logic in ChessService
-        return currentService.createAuth(user.userName());
+        if (user.username()==null || user.password()==null || user.email()==null){
+            throw new AssertionFailedError();
+        } else {
+            ChessService currentService = new ChessService(dataAccess);
+            Auth current = currentService.regUser(user);
+            System.out.println("Handler16: "+current);
+            return current;
+        }
     }
 }

@@ -1,14 +1,13 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.DataAccess;
+import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
 import model.*;
 
-import java.nio.channels.AlreadyBoundException;
+import java.rmi.AlreadyBoundException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class ChessService {
@@ -17,29 +16,36 @@ public class ChessService {
     public ChessService(DataAccess dataAccess){
         this.dataAccess = dataAccess;
     }
-    public Auth regUser(User userData){
+    public Auth regUser(User userData) throws AssertionFailedError {
         if(getUser(userData) == null){
             createUser(userData);
-            return createAuth(userData.userName());
+            return createAuth(userData.username());
         } else {
-            return null;
+            throw new AssertionFailedError();
         }
     }
-    public User getUser(User userData) {
-        User returnData = dataAccess.getUserbyUsername(userData.userName());
+    public User getUser(User userData) throws AssertionError {
+        User returnData = dataAccess.getUserbyUsername(userData.username());
         if (returnData==null){
             return null;
         } else {
-            return userData;
+            throw new AssertionError();
         }
+    }
+    public boolean authenticate(String authToken){
+        if (dataAccess.getAuthbyToken(authToken)!=null){
+            return true;
+        };
+        return false;
     }
     public void createUser(User userData){
         dataAccess.createUser(userData);
     }
     public Auth createAuth(String username){
         String authToken = UUID.randomUUID().toString();
-        dataAccess.createAuth(username, authToken);
-        return dataAccess.getAuthbyToken(authToken);
+        Auth newAuth = new Auth(username, authToken);
+        dataAccess.createAuth(newAuth);
+        return newAuth;
     }
     public void deleteAllGames() throws ResponseParseException{
         dataAccess.deleteAllAuth();

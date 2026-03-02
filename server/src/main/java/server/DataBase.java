@@ -50,16 +50,15 @@ public class DataBase {
         return gameTable.get(id);
     }
     public Auth getAuthbyToken(String token){
-        //if doesn't exist, throw unauthorized error
         return authTable.get(token);
     }
     public void createUser(User userData){
-        userTable.put(userData.userName(), userData);
+        userTable.put(userData.username(), userData);
     }
     public void createGame(int gID, String gn){
         gameTable.put(gID, new Game(gID, gn));
     }
     public void createAuth(String authToken, Auth authData){
-        authTable.put(authToken, new Auth(authData.userName(),authData.authtoken()));
+        authTable.put(authToken, new Auth(authData.username(),authData.authToken()));
     }
 }

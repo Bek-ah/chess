@@ -15,8 +15,8 @@ public class DataAccess {
     void createGame(String gn, Integer gID){
         myDataBase.createGame(gID, gn);
     }
-    public void createAuth(String username, String authToken){
-        myDataBase.createAuth(authToken, new Auth(username, authToken));
+    public void createAuth(Auth newAuth){
+        myDataBase.createAuth(newAuth.authToken(), newAuth);
     }
     //GET 1
     public User getUserbyUsername(String username){
