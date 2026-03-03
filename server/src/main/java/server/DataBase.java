@@ -11,7 +11,7 @@ public class DataBase {
     final private HashMap<String, Auth> authTable = new HashMap<>();
     final private HashMap<Integer, Game> gameTable = new HashMap<>();
 
-    public void DataBase(){}
+    public DataBase(){}
 
     public HashMap<String, User> getUserTable(){
         return userTable;

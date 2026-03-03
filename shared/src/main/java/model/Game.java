@@ -22,21 +22,16 @@ public class Game {
         return false;
     }
     Game game1 = (Game) o;
-    return Objects.equals(gameID, game1.gameID) && Objects.equals(whiteUsername, game1.whiteUsername) && Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
+    boolean boo = Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
+    return Objects.equals(gameID, game1.gameID) && Objects.equals(whiteUsername, game1.whiteUsername) && boo;
 }@Override
 public int hashCode() {
     return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
 }public boolean setWhitePlayer(String name){
-        /*if (whiteUsername != null){
-            //throw exception
-        } else {*/
         this.whiteUsername = name;
         return true;
     }
     public boolean setBlackPlayer(String name){
-        /*if (blackUsername != null){
-            //throw exception
-        } else {*/
         this.blackUsername = name;
         return true;
     }

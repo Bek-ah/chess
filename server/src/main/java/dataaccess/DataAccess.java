@@ -32,12 +32,6 @@ public class DataAccess {
         return myDataBase.getAuthbyToken(token);
     }
     //GET ALL
-    public HashMap<String, User> getAllUsers(){
-        return myDataBase.getUserTable();
-    }
-    public HashMap<String, Auth> getAllAuth(){
-        return myDataBase.getAuthTable();
-    }
     public HashMap<Integer, Game> getAllGames(){
         return myDataBase.getGameTable();
     }
