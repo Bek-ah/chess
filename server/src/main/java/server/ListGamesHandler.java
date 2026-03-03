@@ -14,7 +14,7 @@ public class ListGamesHandler {
         ChessService currentService = new ChessService(dataAccess);
         currentService.authenticate(authToken);
         Collection<Game> gameList = currentService.getAllMyGames();
-        System.out.println(gameList);
+        System.out.println("gameListHandler: "+gameList);
         return gameList;
     }
 }

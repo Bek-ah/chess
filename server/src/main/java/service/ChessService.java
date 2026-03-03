@@ -12,29 +12,33 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessGame.TeamColor.BLACK;
-
 public class ChessService {
     private final DataAccess dataAccess;
 
-    public ChessService(DataAccess dataAccess){
+    public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
     }
-    public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess){
-        if(dataAccess.getAuthbyToken(authToken)==null){
-            int i = 0;//throw error
+    public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
+        if(!authenticate(authToken)){
+            throw new AssertionError();
         }
         Game game = dataAccess.getGamebyGameID(gameID);
-        if(game==null){
-            int i = 0;//throw error
+        String username = dataAccess.getAuthbyToken(authToken).username();
+        if(playerColor.equals("BLACK")){
+            if(game.getBlackUsername()==null){
+                dataAccess.getGamebyGameID(gameID).setBlackPlayer(username);
+            } else {
+                System.out.println("Black is takenService31");
+                throw new AlreadyBoundException();
+            }
+        } else if (playerColor.equals("WHITE")){
+            if(game.getWhiteUsername()!=null){
+                System.out.println("White is takenService36");
+                throw new AlreadyBoundException();
+            } else {
+                dataAccess.getGamebyGameID(gameID).setWhitePlayer(username);
+            }
         }
-        if(playerColor.equals(BLACK)){
-            game.getBlackUsername();//add already taken exception
-        } else if (playerColor.equals(WHITE)){
-            game.getWhiteUsername();
-        }
-        //addplayer
     }
     public Auth regUser(User userData) throws AssertionFailedError {
         if(getUser(userData) == null){

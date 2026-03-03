@@ -11,9 +11,7 @@ import java.util.MissingFormatArgumentException;
 import java.util.NoSuchElementException;
 
 public class LoginHandler {
-    public LoginHandler(){
-
-    }
+    public LoginHandler(){}
     public Auth login(String body, DataAccess dataAccess) throws NoSuchElementException, AccessDeniedException, MissingFormatArgumentException {
         ChessService service = new ChessService(dataAccess);
         User user = new Gson().fromJson(body, User.class);

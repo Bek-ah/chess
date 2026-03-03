@@ -16,7 +16,6 @@ import java.rmi.AlreadyBoundException;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
 import java.util.NoSuchElementException;
-//import static com.sun.tools.javac.jvm.ByteCodes.ret;
 
 public class Server {
     private final Javalin javalin;
@@ -53,6 +52,13 @@ public class Server {
         ctx.status(200);
         } catch (WrongArgumentException e){
             ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+        } catch (AssertionError a){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+        } catch (AlreadyBoundException b){
+            ctx.status(403);
+            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
         }
     }
     private void createGame(Context ctx) throws ClassNotFoundException {
@@ -63,12 +69,9 @@ public class Server {
             GameID gameID = new GameID(newGame.getID());
             String bodyText = new Gson().toJson(gameID);
             if (gameName.length() < 3 || authToken == null){
-                System.out.println("Detected error Server66");
                 ctx.status(400);
                 ctx.result(new Gson().toJson(Map.of("message","Error: Bad request")));
             } else {
-            System.out.println("Didn't detect error Server66");
-            System.out.println("GameName: " + gameName.length());
             ctx.status(200);
             ctx.result(bodyText);
             }

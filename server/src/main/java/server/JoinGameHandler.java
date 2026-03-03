@@ -6,18 +6,26 @@ import dataaccess.DataAccess;
 import model.User;
 import service.ChessService;
 
-import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessGame.TeamColor.BLACK;
+import java.rmi.AlreadyBoundException;
+
 
 public class JoinGameHandler {
-    public JoinGameHandler(){
+    public JoinGameHandler() {
     }
-    public void joinGame(String authToken, String myBody, DataAccess dataAccess) throws WrongArgumentException {
+    public void joinGame(String authToken, String myBody, DataAccess dataAccess)
+            throws WrongArgumentException, AlreadyBoundException, AssertionError {
         JoinGameInput body = new Gson().fromJson(myBody, JoinGameInput.class);
         ChessService service = new ChessService(dataAccess);
-        //CHECK IF PLAYER COLOR IS CORRECT
-        if(body.playerColor().equals(WHITE) || body.playerColor().equals(BLACK)) {
-            service.joinGame(authToken, body.playerColor(), body.gameID(), dataAccess);
+        //CHECK IF INPUT IS CORRECT
+        if(body.playerColor()==null){
+            throw new WrongArgumentException();
+        }
+        if(body.playerColor().equals("WHITE") || body.playerColor().equals("BLACK")) {
+            if(body.gameID()!= null && authToken != null) {
+                service.joinGame(authToken, body.playerColor(), body.gameID(), dataAccess);
+            } else {
+                throw new WrongArgumentException();
+            }
         } else {
             throw new WrongArgumentException();
         }

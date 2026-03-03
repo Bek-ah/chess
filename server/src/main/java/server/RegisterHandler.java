@@ -19,7 +19,7 @@ public class RegisterHandler {
         } else {
             ChessService currentService = new ChessService(dataAccess);
             Auth current = currentService.regUser(user);
-            System.out.println("Handler16: "+current);
+            System.out.println("RegisterHandler22: "+current);
             return current;
         }
     }
