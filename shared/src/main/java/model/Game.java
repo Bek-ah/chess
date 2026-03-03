@@ -6,13 +6,16 @@ public class Game {
     private final Integer gameID;
     private String whiteUsername;
     private String blackUsername;
-    private final String gameName;
+    private String gameName;
     private final ChessGame game;
 
     public Game(Integer gID, String gn){
         this.gameID = gID;
         this.gameName = gn;
         this.game = new ChessGame();
+    }
+    public void setName(String newName){
+        gameName = newName;
     }
 @Override public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {

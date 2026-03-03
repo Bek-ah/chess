@@ -18,9 +18,7 @@ public class RegisterHandler {
             throw new AssertionFailedError();
         } else {
             ChessService currentService = new ChessService(dataAccess);
-            Auth current = currentService.regUser(user);
-            System.out.println("RegisterHandler22: "+current);
-            return current;
+            return currentService.regUser(user);
         }
     }
 }

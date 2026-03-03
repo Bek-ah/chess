@@ -1,5 +1,7 @@
 package server;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import com.sun.jdi.request.InvalidRequestStateException;
 import com.google.gson.Gson;
@@ -106,9 +108,21 @@ public class Server {
     }
     private void getGames(Context ctx){
         try {
-            String authHeader = ctx.header("Authorization");
+            String authHeader = ctx.header("Authorization"); //Parse
+
             ListGamesHandler list = new ListGamesHandler();
             Collection<Game> myList = list.getGameList(authHeader, dataAccess);
+            for (Game game : myList){
+                String gn = game.getName();
+                String flattened = gn;
+                if (gn != null && gn.startsWith("{") && gn.endsWith("}")) {
+                    JsonObject json = JsonParser.parseString(gn).getAsJsonObject();
+                    if (json.has("gameName")){
+                        flattened = json.get("gameName").getAsString();
+                    }
+                    game.setName(flattened);
+                }
+            }
             Map<String, Collection<Game>> myMap = Map.of("games", myList);
             ctx.status(200);
             ctx.result(new Gson().toJson(myMap));

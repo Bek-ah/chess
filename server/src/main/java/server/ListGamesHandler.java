@@ -12,6 +12,7 @@ public class ListGamesHandler {
     public ListGamesHandler(){}
     public Collection<Game> getGameList(String authToken, DataAccess dataAccess) throws AccessDeniedException {
         ChessService currentService = new ChessService(dataAccess);
+
         currentService.getAllMyGames(authToken);
         Collection<Game> gameList = currentService.getAllMyGames(authToken);
         System.out.println("gameListHandler: "+gameList);
