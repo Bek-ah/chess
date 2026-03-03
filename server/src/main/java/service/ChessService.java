@@ -5,9 +5,11 @@ import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
 import model.*;
 
+import javax.xml.crypto.Data;
 import java.rmi.AlreadyBoundException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class ChessService {
@@ -32,11 +34,33 @@ public class ChessService {
             throw new AssertionError();
         }
     }
-    public boolean authenticate(String authToken){
-        if (dataAccess.getAuthbyToken(authToken)!=null){
-            return true;
+    public void logout(String authToken, DataAccess dataAccess) throws NoSuchElementException {
+        if(!authenticate(authToken)){
+            System.out.println(authenticate((authToken)));
+            throw new NoSuchElementException();
+        }
+        dataAccess.deleteAuth(authToken);
+    }
+    public Game addGame(String authToken, String gameName, DataAccess dataAccess){
+        if(!authenticate(authToken)){
+            System.out.println("authToken not found");
+            return null;
+        }
+        System.out.println("authToken found");
+        Game gameData = dataAccess.getGamebyGameName(gameName);
+        if (gameData!=null){
+            return null;
+        }
+        UUID uuid = UUID.randomUUID();
+        int id = uuid.hashCode();
+        return dataAccess.createGame(gameName, id);
+    }
+    public boolean authenticate(String authToken){ //true means authToken exists
+        System.out.println(dataAccess.getAuthbyToken(authToken));
+        if (dataAccess.getAuthbyToken(authToken)==null){
+            return false;
         };
-        return false;
+        return true;
     }
     public void createUser(User userData){
         dataAccess.createUser(userData);

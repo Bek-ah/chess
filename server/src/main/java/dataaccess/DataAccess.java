@@ -12,8 +12,8 @@ public class DataAccess {
     public void createUser(User userData){
         myDataBase.createUser(userData);
     }
-    void createGame(String gn, Integer gID){
-        myDataBase.createGame(gID, gn);
+    public Game createGame(String gn, int gID){
+        return myDataBase.createGame(gID, gn);
     }
     public void createAuth(Auth newAuth){
         myDataBase.createAuth(newAuth.authToken(), newAuth);
@@ -25,8 +25,10 @@ public class DataAccess {
     public Game getGamebyGameID(int id){
         return myDataBase.getGamebyGameID(id);
     }
+    public Game getGamebyGameName(String gameName){
+        return myDataBase.getGamebyGameName(gameName);
+    }
     public Auth getAuthbyToken(String token){
-        //if doesn't exist, throw unauthorized error
         return myDataBase.getAuthbyToken(token);
     }
     //GET ALL
@@ -40,15 +42,15 @@ public class DataAccess {
         return myDataBase.getGameTable();
     }
     //CLEAR 1
-    /*void deleteUser(String username) {
-        userTable.remove(username);
+    public void deleteUser(String username) {
+        myDataBase.deleteUser(username);
     }
-    void deleteAuth(String token){
-        authTable.remove(token);
+    public void deleteAuth(String token){
+        myDataBase.deleteAuth(token);
     }
-    void deleteGame(int gameID) {
-        gameTable.remove(gameID);
-    }*/
+    public void deleteGame(int gameID) {
+        myDataBase.deleteGame(gameID);
+    }
     //CLEAR ALL
     public void deleteAllUsers() {
         myDataBase.deleteAllUsers();

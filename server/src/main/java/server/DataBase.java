@@ -46,17 +46,31 @@ public class DataBase {
         }
         return null;
     }
+    public Game getGamebyGameName(String gameName) {
+        for (Game game : gameTable.values()){
+            if(game.getName().equals(gameName)){
+                return game;
+            }
+        }
+        System.out.println("No Game found");
+        return null;
+    }
     public Game getGamebyGameID(int id){
         return gameTable.get(id);
     }
     public Auth getAuthbyToken(String token){
+        System.out.println(authTable);
+        System.out.println(token);
+        System.out.println(authTable.get(token));
         return authTable.get(token);
     }
     public void createUser(User userData){
         userTable.put(userData.username(), userData);
     }
-    public void createGame(int gID, String gn){
+    public Game createGame(int gID, String gn){
+        Game newGame = new Game(gID, gn);
         gameTable.put(gID, new Game(gID, gn));
+        return newGame;
     }
     public void createAuth(String authToken, Auth authData){
         authTable.put(authToken, new Auth(authData.username(),authData.authToken()));

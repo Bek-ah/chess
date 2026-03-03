@@ -30,20 +30,34 @@ public class Server {
         javalin.post("/user", this::register);
         javalin.get("/game", this::getGames);
         javalin.post("/session", this::login);
-        javalin.post("/session", this::logout);
-
+        javalin.delete("/session", this::logout);
+        javalin.post("/game", this::createGame);
     }
-
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
     }
-
     public void stop() {
         javalin.stop();
     }
+
     public DataAccess getDataAccess(){
         return dataAccess;
+    }
+    private void createGame(Context ctx) throws ClassNotFoundException {
+        try {
+            String authToken = ctx.header("Authorization");
+            String gameName = ctx.body();
+            Game newGame = new CreateGameHandler().addGame(authToken,gameName,dataAccess);
+            GameID gameID = new GameID(newGame.getID());
+            String bodyText = new Gson().toJson(gameID);
+            ctx.status(200);
+            ctx.result(bodyText);
+        } catch (ClassNotFoundException e){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+        }
+
     }
     private void deleteAllGames(Context ctx) throws ResponseParseException {
         new ClearHandler(dataAccess);
@@ -65,9 +79,9 @@ public class Server {
         }
     }
     private void getGames(Context ctx){
-        String authHeader = ctx.header("Auth");
-        Auth auth = new Gson().fromJson(authHeader, Auth.class);
-        ListGamesHandler list = new ListGamesHandler(auth,dataAccess);
+        String authHeader = ctx.header("Authorization");
+        //Auth auth = new Gson().fromJson(authHeader, Auth.class);
+        ListGamesHandler list = new ListGamesHandler(authHeader,dataAccess);
         System.out.println(list.getGameList());
         ctx.status(200);
         String bodyText = new Gson().toJson(list.getGameList());
@@ -92,14 +106,11 @@ public class Server {
     }
     private void logout(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
         try{
-            new LogoutHandler().logout(ctx.header("Auth"), dataAccess);
+            new LogoutHandler().logout(ctx.header("Authorization"), dataAccess);
             ctx.status(200);
-        } catch (MissingFormatArgumentException d) {
-            ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message","Error: wrong number of arguments")));
-        } catch (AccessDeniedException e){
+        } catch (NoSuchElementException d) {
             ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message","Error: password or username is incorrect")));
+            ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
         }
     }
 
