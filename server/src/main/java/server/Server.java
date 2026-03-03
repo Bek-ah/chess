@@ -10,8 +10,11 @@ import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
 import service.ChessService;
 
+import java.nio.file.AccessDeniedException;
 import java.rmi.AlreadyBoundException;
 import java.util.Map;
+import java.util.MissingFormatArgumentException;
+import java.util.NoSuchElementException;
 //import static com.sun.tools.javac.jvm.ByteCodes.ret;
 
 public class Server {
@@ -26,6 +29,9 @@ public class Server {
         javalin.delete("/db", this::deleteAllGames);
         javalin.post("/user", this::register);
         javalin.get("/game", this::getGames);
+        javalin.post("/session", this::login);
+        javalin.post("/session", this::logout);
+
     }
 
     public int run(int desiredPort) {
@@ -44,7 +50,6 @@ public class Server {
         ctx.status(200);
     }
     private void register(Context ctx) throws AssertionFailedError, InvalidRequestStateException {
-        ctx.status(200);
         try {
             Auth obj = new RegisterHandler().register(ctx.body(),dataAccess);
             //double register catch
@@ -69,4 +74,33 @@ public class Server {
         System.out.println(list.getGameList());
         ctx.result(bodyText);
     }
+    private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
+        try{
+            Auth obj = new LoginHandler().login(ctx.body(),dataAccess);
+            ctx.status(200);
+            ctx.result(new Gson().toJson(obj));
+        } catch (MissingFormatArgumentException d) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message","Error: wrong number of arguments")));
+        } catch (AccessDeniedException e){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: password or username is incorrect")));
+        } catch (NoSuchElementException f){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: no such user found")));
+        }
+    }
+    private void logout(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
+        try{
+            new LogoutHandler().logout(ctx.header("Auth"), dataAccess);
+            ctx.status(200);
+        } catch (MissingFormatArgumentException d) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message","Error: wrong number of arguments")));
+        } catch (AccessDeniedException e){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: password or username is incorrect")));
+        }
+    }
+
 }
