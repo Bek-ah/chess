@@ -59,9 +59,6 @@ public class DataBase {
         return gameTable.get(id);
     }
     public Auth getAuthbyToken(String token){
-        System.out.println(authTable);
-        System.out.println(token);
-        System.out.println(authTable.get(token));
         return authTable.get(token);
     }
     public void createUser(User userData){

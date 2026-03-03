@@ -1,5 +1,6 @@
 package server;
 
+import com.mysql.cj.exceptions.WrongArgumentException;
 import com.sun.jdi.request.InvalidRequestStateException;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
@@ -32,6 +33,7 @@ public class Server {
         javalin.post("/session", this::login);
         javalin.delete("/session", this::logout);
         javalin.post("/game", this::createGame);
+        javalin.put("/game", this::joinGame);
     }
     public int run(int desiredPort) {
         javalin.start(desiredPort);
@@ -40,9 +42,18 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-
     public DataAccess getDataAccess(){
         return dataAccess;
+    }
+    private void joinGame(Context ctx) {
+        try {
+        String authToken = ctx.header("Authorization");
+        JoinGameHandler join = new JoinGameHandler();
+        join.joinGame(authToken, ctx.body(), dataAccess);
+        ctx.status(200);
+        } catch (WrongArgumentException e){
+            ctx.status(400);
+        }
     }
     private void createGame(Context ctx) throws ClassNotFoundException {
         try {
@@ -51,11 +62,22 @@ public class Server {
             Game newGame = new CreateGameHandler().addGame(authToken,gameName,dataAccess);
             GameID gameID = new GameID(newGame.getID());
             String bodyText = new Gson().toJson(gameID);
+            if (gameName.length() < 3 || authToken == null){
+                System.out.println("Detected error Server66");
+                ctx.status(400);
+                ctx.result(new Gson().toJson(Map.of("message","Error: Bad request")));
+            } else {
+            System.out.println("Didn't detect error Server66");
+            System.out.println("GameName: " + gameName.length());
             ctx.status(200);
             ctx.result(bodyText);
+            }
         } catch (ClassNotFoundException e){
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+        } catch (WrongArgumentException b){
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message","Error: wrong parameters")));
         }
 
     }
@@ -81,11 +103,11 @@ public class Server {
     private void getGames(Context ctx){
         String authHeader = ctx.header("Authorization");
         //Auth auth = new Gson().fromJson(authHeader, Auth.class);
-        ListGamesHandler list = new ListGamesHandler(authHeader,dataAccess);
-        System.out.println(list.getGameList());
+        ListGamesHandler list = new ListGamesHandler();
+        System.out.println(list.getGameList(authHeader,dataAccess));
         ctx.status(200);
-        String bodyText = new Gson().toJson(list.getGameList());
-        System.out.println(list.getGameList());
+        String bodyText = new Gson().toJson(list.getGameList(authHeader,dataAccess));
+        System.out.println(list.getGameList(authHeader,dataAccess));
         ctx.result(bodyText);
     }
     private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {

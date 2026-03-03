@@ -12,11 +12,29 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
+
 public class ChessService {
     private final DataAccess dataAccess;
 
     public ChessService(DataAccess dataAccess){
         this.dataAccess = dataAccess;
+    }
+    public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess){
+        if(dataAccess.getAuthbyToken(authToken)==null){
+            int i = 0;//throw error
+        }
+        Game game = dataAccess.getGamebyGameID(gameID);
+        if(game==null){
+            int i = 0;//throw error
+        }
+        if(playerColor.equals(BLACK)){
+            game.getBlackUsername();//add already taken exception
+        } else if (playerColor.equals(WHITE)){
+            game.getWhiteUsername();
+        }
+        //addplayer
     }
     public Auth regUser(User userData) throws AssertionFailedError {
         if(getUser(userData) == null){
@@ -36,27 +54,26 @@ public class ChessService {
     }
     public void logout(String authToken, DataAccess dataAccess) throws NoSuchElementException {
         if(!authenticate(authToken)){
-            System.out.println(authenticate((authToken)));
             throw new NoSuchElementException();
         }
         dataAccess.deleteAuth(authToken);
     }
     public Game addGame(String authToken, String gameName, DataAccess dataAccess){
         if(!authenticate(authToken)){
-            System.out.println("authToken not found");
             return null;
         }
-        System.out.println("authToken found");
         Game gameData = dataAccess.getGamebyGameName(gameName);
         if (gameData!=null){
             return null;
         }
         UUID uuid = UUID.randomUUID();
         int id = uuid.hashCode();
+        if (id < 0){
+            id *= -1;
+        }
         return dataAccess.createGame(gameName, id);
     }
     public boolean authenticate(String authToken){ //true means authToken exists
-        System.out.println(dataAccess.getAuthbyToken(authToken));
         if (dataAccess.getAuthbyToken(authToken)==null){
             return false;
         };
