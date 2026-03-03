@@ -6,6 +6,7 @@ import passoff.exception.ResponseParseException;
 import model.*;
 
 import javax.xml.crypto.Data;
+import java.nio.file.AccessDeniedException;
 import java.rmi.AlreadyBoundException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -97,7 +98,10 @@ public class ChessService {
         dataAccess.deleteAllUsers();
         dataAccess.deleteAllGames();
     }
-    public Collection<Game> getAllMyGames(){
+    public Collection<Game> getAllMyGames(String authToken) throws AccessDeniedException{
+        if(!authenticate(authToken)){
+            throw new AccessDeniedException("Access Denied");
+        }
         HashMap<Integer,Game> gameHash = dataAccess.getAllGames();
         return gameHash.values();
     }

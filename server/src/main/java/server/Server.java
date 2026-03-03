@@ -13,6 +13,7 @@ import service.ChessService;
 
 import java.nio.file.AccessDeniedException;
 import java.rmi.AlreadyBoundException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
 import java.util.NoSuchElementException;
@@ -104,14 +105,17 @@ public class Server {
         }
     }
     private void getGames(Context ctx){
-        String authHeader = ctx.header("Authorization");
-        //Auth auth = new Gson().fromJson(authHeader, Auth.class);
-        ListGamesHandler list = new ListGamesHandler();
-        System.out.println(list.getGameList(authHeader,dataAccess));
-        ctx.status(200);
-        String bodyText = new Gson().toJson(list.getGameList(authHeader,dataAccess));
-        System.out.println(list.getGameList(authHeader,dataAccess));
-        ctx.result(bodyText);
+        try {
+            String authHeader = ctx.header("Authorization");
+            ListGamesHandler list = new ListGamesHandler();
+            Collection<Game> myList = list.getGameList(authHeader, dataAccess);
+            Map<String, Collection<Game>> myMap = Map.of("games", myList);
+            ctx.status(200);
+            ctx.result(new Gson().toJson(myMap));
+        } catch (AccessDeniedException v){
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
+        }
     }
     private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
         try{
