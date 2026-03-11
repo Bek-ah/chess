@@ -40,11 +40,11 @@ public class MySqulDataAccess implements DataAccess {
                 preparedStatement.setString(1, gn);
                 preparedStatement.setInt(2, gID);
                 preparedStatement.executeUpdate();
+                return new Game(gID, gn);
             }
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
     public void createAuth(Auth newAuth){
         var statement = "INSERT INTO authTable (`username`, `authToken`) VALUES (?, ?)";
@@ -77,22 +77,84 @@ public class MySqulDataAccess implements DataAccess {
     }
     private User readUser(ResultSet rs) throws SQLException {
         var json = rs.getString("user");
-        return new Gson().fromJson(json, User.class);
+        User user = new Gson().fromJson(json, User.class);
+        return user;
+    }
+    private Game readGame(ResultSet rs) throws SQLException {
+        var json = rs.getString("game");
+        Game game = new Gson().fromJson(json, Game.class);
+        return game;
+    }
+    private Auth readAuth(ResultSet rs) throws SQLException {
+        var token = rs.getString("authToken");
+        var userName = rs.getString("username");
+        return new Auth(userName, token);
     }
     public Game getGamebyGameID(int id){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT `gameID`, `game` FROM gameTable WHERE gameID=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseParseException("Unable to read data", e);
+        }
         return null;
-
     }
     public Game getGamebyGameName(String gameName){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT `gameName`, `game` FROM gameTable WHERE gameName=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, gameName);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseParseException("Unable to read data", e);
+        }
         return null;
     }
     public Auth getAuthbyToken(String token){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT `username`, `authToken` FROM authTable WHERE authToken=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, token);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseParseException("Unable to read data", e);
+        }
         return null;
     }
     //GET ALL
     public HashMap<Integer, Game> getAllGames(){
-        return null;
-
+        var result = new HashMap<Integer, Game>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, game FROM gameTable";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Game game = readGame(rs);
+                        result.put(game.getID(),game);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new NullPointerException("Data Access exception getAllGames");
+        }
+        return result;
     }
     //CLEAR 1
     public void deleteUser(String username) {
