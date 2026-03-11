@@ -1,15 +1,10 @@
-package passoff.server;
-
-import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
+import passoff.server.TestServerFacade;
 import server.Server;
 
-import java.net.HttpURLConnection;
-import java.util.*;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Tests {
+public class Tests {/*
 
     private static TestUser existingUser;
     private static TestUser newUser;
@@ -20,7 +15,7 @@ public class Tests {
 
     // ### TESTING SETUP/CLEANUP ###
 
-    /*@AfterAll
+    @AfterAll
     static void stopServer() {
         server.stop();
     }
@@ -63,5 +58,5 @@ public class Tests {
         TestResult clearResult = serverFacade.clear();
         Server
         Assertions.assertEquals(clearResult,)
-
-    }*/
+*/
+    }

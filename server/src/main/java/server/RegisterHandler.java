@@ -6,10 +6,8 @@ import model.*;
 import org.opentest4j.AssertionFailedError;
 import service.ChessService;
 
-import java.rmi.AlreadyBoundException;
-
 public class RegisterHandler {
-    //final private DataAccess myDataAccess = ;
+    //final private dataaccess.DataAccess myDataAccess = ;
     public RegisterHandler() throws AssertionFailedError {
     }
     public Auth register(String body, DataAccess dataAccess) throws AssertionFailedError {

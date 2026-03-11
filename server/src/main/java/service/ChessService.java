@@ -1,6 +1,6 @@
 package service;
 
-import dataaccess.MemoryDataAccess;
+import dataaccess.DataAccess;
 import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
 import model.*;
@@ -13,12 +13,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class ChessService {
-    private final MemoryDataAccess dataAccess;
+    private final DataAccess dataAccess;
 
-    public ChessService(MemoryDataAccess dataAccess) {
+    public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
     }
-    public void joinGame(String authToken, String playerColor, int gameID, MemoryDataAccess dataAccess) throws AlreadyBoundException, AssertionError {
+    public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
         if(!authenticate(authToken)){
             throw new AssertionError();
         }
@@ -56,13 +56,13 @@ public class ChessService {
             throw new AssertionError();
         }
     }
-    public void logout(String authToken, MemoryDataAccess dataAccess) throws NoSuchElementException {
+    public void logout(String authToken, DataAccess dataAccess) throws NoSuchElementException {
         if(!authenticate(authToken)){
             throw new NoSuchElementException();
         }
         dataAccess.deleteAuth(authToken);
     }
-    public Game addGame(String authToken, String gameName, MemoryDataAccess dataAccess){
+    public Game addGame(String authToken, String gameName, DataAccess dataAccess){
         if(!authenticate(authToken)){
             return null;
         }

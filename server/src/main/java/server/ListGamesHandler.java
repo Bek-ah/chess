@@ -1,7 +1,6 @@
 package server;
 
 import dataaccess.DataAccess;
-import model.Auth;
 import model.Game;
 import service.ChessService;
 

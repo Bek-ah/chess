@@ -3,7 +3,6 @@ package server;
 import com.google.gson.Gson;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import dataaccess.DataAccess;
-import model.User;
 import service.ChessService;
 
 import java.rmi.AlreadyBoundException;

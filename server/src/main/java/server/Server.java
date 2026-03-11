@@ -5,7 +5,8 @@ import com.google.gson.JsonParser;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import com.sun.jdi.request.InvalidRequestStateException;
 import com.google.gson.Gson;
-import dataaccess.MemoryDataAccess;
+import dataaccess.DataAccess;
+import dataaccess.MySqulDataAccess;
 import model.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -22,8 +23,7 @@ import java.util.NoSuchElementException;
 
 public class Server {
     private final Javalin javalin;
-    private final MemoryDataAccess dataAccess = new MemoryDataAccess();
-    private final ChessService service = new ChessService(dataAccess);
+    private final DataAccess dataAccess = new MySqulDataAccess();
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -44,7 +44,7 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-    public MemoryDataAccess getDataAccess(){
+    public DataAccess getDataAccess(){
         return dataAccess;
     }
     private void joinGame(Context ctx) {
