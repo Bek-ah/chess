@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import com.mysql.cj.exceptions.WrongArgumentException;
 import com.sun.jdi.request.InvalidRequestStateException;
 import com.google.gson.Gson;
-import dataaccess.DataAccess;
+import dataaccess.MemoryDataAccess;
 import model.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 
 public class Server {
     private final Javalin javalin;
-    private final DataAccess dataAccess = new DataAccess();
+    private final MemoryDataAccess dataAccess = new MemoryDataAccess();
     private final ChessService service = new ChessService(dataAccess);
 
     public Server() {
@@ -44,7 +44,7 @@ public class Server {
     public void stop() {
         javalin.stop();
     }
-    public DataAccess getDataAccess(){
+    public MemoryDataAccess getDataAccess(){
         return dataAccess;
     }
     private void joinGame(Context ctx) {
