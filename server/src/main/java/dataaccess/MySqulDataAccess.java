@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -20,6 +21,17 @@ public class MySqulDataAccess implements DataAccess {
 
     //CREATE
     public void createUser(User userData){
+        var statement = "INSERT INTO userTable (username, user) VALUES (?, ?)";
+        String json = new Gson().toJson(userData);
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, userData.username());
+                preparedStatement.setString(2, json);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
     public Game createGame(String gn, int gID){
         return null;
@@ -28,7 +40,26 @@ public class MySqulDataAccess implements DataAccess {
     }
     //GET 1
     public User getUserbyUsername(String username){
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, json FROM userTable WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseParseException("Unable to read data", e);
+        }
         return null;
+    }
+    private User readUser(ResultSet rs) throws SQLException {
+        var username = rs.getInt("username");
+        var json = rs.getString("json");
+        User user = new Gson().fromJson(json, User.class);
+        return user;
     }
     public Game getGamebyGameID(int id){
         return null;
@@ -36,7 +67,6 @@ public class MySqulDataAccess implements DataAccess {
     }
     public Game getGamebyGameName(String gameName){
         return null;
-
     }
     public Auth getAuthbyToken(String token){
         return null;
@@ -59,13 +89,9 @@ public class MySqulDataAccess implements DataAccess {
         var statement = "TRUNCATE userTable;";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
+                preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (DataAccessException e) {
+        } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -73,13 +99,9 @@ public class MySqulDataAccess implements DataAccess {
         var statement = "TRUNCATE authTable;";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
+                preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (DataAccessException e) {
+        } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -87,13 +109,9 @@ public class MySqulDataAccess implements DataAccess {
         var statement = "TRUNCATE gameTable;";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
+                preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (DataAccessException e) {
+        } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -101,34 +119,28 @@ public class MySqulDataAccess implements DataAccess {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  userTable (
-              `username` VARCHAR(255),
-              `password` VARCHAR(255) NOT NULL,
-              `email` VARCHAR(255) NOT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(email),
-              UNIQUE(username),
-              UNIQUE(email)
+              `username` VARCHAR(255) NOT NULL,
+              `user` JSON,
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS  authTable (
-              `username` VARCHAR(255),
+              `username` VARCHAR(255) NOT NULL,
               `authToken` VARCHAR(255) NOT NULL,
               PRIMARY KEY (`username`),
-              INDEX(authToken),
-              UNIQUE(username)
+              INDEX(authToken)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS  gameTable (
-              `gameID` int NOT NULL,
+              `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` VARCHAR(100),
               `blackUsername` VARCHAR(100),
               `gameName` VARCHAR(100) NOT NULL,
               `game` JSON,
-              PRIMARY KEY (`gameName`),
-              INDEX(gameID),
-              UNIQUE(`gameName`)
+              PRIMARY KEY (`gameID`),
+              INDEX(gameName)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
 
