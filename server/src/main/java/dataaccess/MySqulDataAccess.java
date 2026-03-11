@@ -21,7 +21,7 @@ public class MySqulDataAccess implements DataAccess {
 
     //CREATE
     public void createUser(User userData){
-        var statement = "INSERT INTO userTable (username, user) VALUES (?, ?)";
+        var statement = "INSERT INTO userTable (`username`, `user`) VALUES (?, ?)";
         String json = new Gson().toJson(userData);
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
@@ -34,16 +34,36 @@ public class MySqulDataAccess implements DataAccess {
         }
     }
     public Game createGame(String gn, int gID){
+        var statement = "INSERT INTO userTable (`gameName`, `gameID`) VALUES (?, ?)";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, gn);
+                preparedStatement.setInt(2, gID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
     public void createAuth(Auth newAuth){
+        var statement = "INSERT INTO authTable (`username`, `authToken`) VALUES (?, ?)";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, newAuth.username());
+                preparedStatement.setString(2, newAuth.authToken());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
     //GET 1
-    public User getUserbyUsername(String username){
+    public User getUserbyUsername(String myUsername){
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM userTable WHERE username=?";
+            var statement = "SELECT `username`, `user` FROM userTable WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, username);
+                ps.setString(1, myUsername);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readUser(rs);
@@ -56,10 +76,8 @@ public class MySqulDataAccess implements DataAccess {
         return null;
     }
     private User readUser(ResultSet rs) throws SQLException {
-        var username = rs.getInt("username");
-        var json = rs.getString("json");
-        User user = new Gson().fromJson(json, User.class);
-        return user;
+        var json = rs.getString("user");
+        return new Gson().fromJson(json, User.class);
     }
     public Game getGamebyGameID(int id){
         return null;
