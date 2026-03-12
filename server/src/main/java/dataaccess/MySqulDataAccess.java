@@ -34,7 +34,7 @@ public class MySqulDataAccess implements DataAccess {
         }
     }
     public Game createGame(String gn, int gID){
-        var statement = "INSERT INTO userTable (`gameName`, `gameID`) VALUES (?, ?)";
+        var statement = "INSERT INTO gameTable (`gameName`, `gameID`) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, gn);
@@ -208,8 +208,8 @@ public class MySqulDataAccess implements DataAccess {
             CREATE TABLE IF NOT EXISTS  authTable (
               `username` VARCHAR(255) NOT NULL,
               `authToken` VARCHAR(255) NOT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(authToken)
+              PRIMARY KEY (`authToken`),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
