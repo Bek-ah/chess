@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import model.Auth;
 import model.Game;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 import passoff.exception.ResponseParseException;
 import server.DataBase;
 
@@ -22,10 +23,12 @@ public class MySqulDataAccess implements DataAccess {
     //CREATE
     public void createUser(User userData){
         var statement = "INSERT INTO userTable (`username`, `user`) VALUES (?, ?)";
-        String json = new Gson().toJson(userData);
+        String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+        User secureUser = new User(userData.username(),hashedPassword, userData.email());
+        String json = new Gson().toJson(secureUser);
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, userData.username());
+                preparedStatement.setString(1, secureUser.username());
                 preparedStatement.setString(2, json);
                 preparedStatement.executeUpdate();
             }
@@ -158,10 +161,37 @@ public class MySqulDataAccess implements DataAccess {
     }
     //CLEAR 1
     public void deleteUser(String username) {
+        var statement = "DELETE FROM userTable WHERE username=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void deleteAuth(String token){
+        var statement = "DELETE FROM authTable WHERE authToken=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, token);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void deleteGame(int gameID) {
+        var statement = "DELETE FROM gameTable WHERE gameID=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setInt(1, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //CLEAR ALL
