@@ -24,6 +24,7 @@ public class ChessService {
         }
         Game game = dataAccess.getGamebyGameID(gameID);
         String username = dataAccess.getAuthbyToken(authToken).username();
+        System.out.println(playerColor);
         if(playerColor.equals("BLACK")){
             if(game.getBlackUsername()==null){
                 dataAccess.getGamebyGameID(gameID).setBlackPlayer(username);

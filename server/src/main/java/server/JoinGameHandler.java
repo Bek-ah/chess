@@ -14,6 +14,7 @@ public class JoinGameHandler {
     public void joinGame(String authToken, String myBody, DataAccess dataAccess)
             throws WrongArgumentException, AlreadyBoundException, AssertionError {
         JoinGameInput body = new Gson().fromJson(myBody, JoinGameInput.class);
+        System.out.println("got to join handler");
         ChessService service = new ChessService(dataAccess);
         //CHECK IF INPUT IS CORRECT
         if(body.playerColor()==null){

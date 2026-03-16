@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.Auth;
 import model.Game;
@@ -37,11 +38,15 @@ public class MySqulDataAccess implements DataAccess {
         }
     }
     public Game createGame(String gn, int gID){
-        var statement = "INSERT INTO gameTable (`gameName`, `gameID`) VALUES (?, ?)";
+        gn = new Gson().fromJson(gn, Game.class).getName();
+        var statement = "INSERT INTO gameTable (`gameName`, `gameID`, `game`) VALUES (?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
+                Game newGame = new Game(gID, gn);
+                String json = new Gson().toJson(newGame);
                 preparedStatement.setString(1, gn);
                 preparedStatement.setInt(2, gID);
+                preparedStatement.setString(3, json);
                 preparedStatement.executeUpdate();
                 return new Game(gID, gn);
             }
@@ -84,9 +89,14 @@ public class MySqulDataAccess implements DataAccess {
         return user;
     }
     private Game readGame(ResultSet rs) throws SQLException {
-        var json = rs.getString("game");
-        Game game = new Gson().fromJson(json, Game.class);
-        return game;
+        int gameID = rs.getInt("gameID");
+        String gameName = rs.getString("gameName");
+        Game newGame = new Game(gameID, gameName);
+        newGame.setWhitePlayer(rs.getString("whiteUsername"));
+        newGame.setBlackPlayer(rs.getString("blackUsername"));
+        String tempGame = rs.getString("game");
+        ChessGame game = new Gson().fromJson(tempGame, ChessGame.class);
+        return newGame;
     }
     private Auth readAuth(ResultSet rs) throws SQLException {
         var token = rs.getString("authToken");
@@ -145,7 +155,7 @@ public class MySqulDataAccess implements DataAccess {
     public HashMap<Integer, Game> getAllGames(){
         var result = new HashMap<Integer, Game>();
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, game FROM gameTable";
+            var statement = "SELECT * FROM gameTable";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
