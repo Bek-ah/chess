@@ -48,7 +48,6 @@ public class MySqulDataAccess implements DataAccess {
         }
     }
     public Game createGame(String gn, int gID){
-        gn = new Gson().fromJson(gn, Game.class).getName();
         var statement = "INSERT INTO gameTable (`gameName`, `gameID`, `game`) VALUES (?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {

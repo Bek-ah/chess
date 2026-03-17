@@ -71,15 +71,16 @@ public class Server {
         try {
             String authToken = ctx.header("Authorization");
             String gameName = ctx.body();
-            Game newGame = new CreateGameHandler().addGame(authToken,gameName,dataAccess);
-            GameID gameID = new GameID(newGame.getID());
-            String bodyText = new Gson().toJson(gameID);
-            if (gameName.length() < 3 || authToken == null){
+            String gn = new Gson().fromJson(gameName, Game.class).getName();
+            if (gn==null || gameName.isEmpty() || authToken == null){
                 ctx.status(400);
                 ctx.result(new Gson().toJson(Map.of("message","Error: Bad request")));
             } else {
-            ctx.status(200);
-            ctx.result(bodyText);
+                Game newGame = new CreateGameHandler().addGame(authToken,gameName,dataAccess);
+                GameID gameID = new GameID(newGame.getID());
+                String bodyText = new Gson().toJson(gameID);
+                ctx.status(200);
+                ctx.result(bodyText);
             }
         } catch (ClassNotFoundException e){
             ctx.status(401);
