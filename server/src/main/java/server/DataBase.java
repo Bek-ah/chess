@@ -12,7 +12,6 @@ public class DataBase {
     final private HashMap<Integer, Game> gameTable = new HashMap<>();
 
     public DataBase(){}
-
     public HashMap<String, User> getUserTable(){
         return userTable;
     }

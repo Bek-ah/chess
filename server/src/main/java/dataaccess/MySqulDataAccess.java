@@ -7,19 +7,29 @@ import model.Game;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 import passoff.exception.ResponseParseException;
-import server.DataBase;
 
 import java.sql.*;
 import java.sql.SQLException;
 import java.util.HashMap;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 
 public class MySqulDataAccess implements DataAccess {
     public MySqulDataAccess() throws ResponseParseException {
         configureDatabase();
     };
+    public void updatePlayers(String whiteUsername, String blackUsername, Integer gameID){
+        var statement = "UPDATE gameTable SET `whiteUsername` = ?, `blackUsername` = ? WHERE `gameID` = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, whiteUsername);
+                preparedStatement.setString(2, blackUsername);
+                preparedStatement.setInt(3, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     //CREATE
     public void createUser(User userData){
@@ -105,7 +115,7 @@ public class MySqulDataAccess implements DataAccess {
     }
     public Game getGamebyGameID(int id){
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT `gameID`, `game` FROM gameTable WHERE gameID=?";
+            var statement = "SELECT * FROM gameTable WHERE gameID=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {

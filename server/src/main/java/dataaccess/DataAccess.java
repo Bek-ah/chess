@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 public interface DataAccess {
     //CREATE
+    public void updatePlayers(String whiteUsername, String blackUsername, Integer gameID);
     public void createUser(User userData);
 
     public Game createGame(String gn, int gID);

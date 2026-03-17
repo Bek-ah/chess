@@ -19,15 +19,18 @@ public class ChessService {
         this.dataAccess = dataAccess;
     }
     public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
+        System.out.println("joinGame22");
         if(!authenticate(authToken)){
             throw new AssertionError();
         }
+        System.out.println("authenticated chessservice26: ");
         Game game = dataAccess.getGamebyGameID(gameID);
         String username = dataAccess.getAuthbyToken(authToken).username();
-        System.out.println(playerColor);
+        System.out.println("playerColor chessservice29: " + playerColor);
         if(playerColor.equals("BLACK")){
             if(game.getBlackUsername()==null){
                 dataAccess.getGamebyGameID(gameID).setBlackPlayer(username);
+                dataAccess.updatePlayers(game.getWhiteUsername(),username,gameID);
             } else {
                 System.out.println("Black is takenService31");
                 throw new AlreadyBoundException();
@@ -38,6 +41,7 @@ public class ChessService {
                 throw new AlreadyBoundException();
             } else {
                 dataAccess.getGamebyGameID(gameID).setWhitePlayer(username);
+                dataAccess.updatePlayers(username,game.getBlackUsername(),gameID);
             }
         }
     }

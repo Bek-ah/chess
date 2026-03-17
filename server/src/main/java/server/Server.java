@@ -55,13 +55,13 @@ public class Server {
         ctx.status(200);
         } catch (WrongArgumentException e){
             ctx.status(400);
-            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+            ctx.result(new Gson().toJson(Map.of("message","Error: wrong argument")));
         } catch (AssertionError a){
             ctx.status(401);
-            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+            ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
         } catch (AlreadyBoundException b){
             ctx.status(403);
-            ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));
+            ctx.result(new Gson().toJson(Map.of("message","Error: already taken")));
         }
     }
     private void createGame(Context ctx) throws ClassNotFoundException {
