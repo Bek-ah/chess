@@ -71,10 +71,6 @@ public class ChessService {
         if(!authenticate(authToken)){
             return null;
         }
-        Game gameData = dataAccess.getGamebyGameName(gameName);
-        if (gameData!=null){
-            return null;
-        }
         UUID uuid = UUID.randomUUID();
         int id = uuid.hashCode();
         if (id < 0){

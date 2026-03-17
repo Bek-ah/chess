@@ -128,22 +128,6 @@ public class MySqulDataAccess implements DataAccess {
         }
         return null;
     }
-    public Game getGamebyGameName(String gameName){
-        try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT `gameName`, `game` FROM gameTable WHERE gameName=?";
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, gameName);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return readGame(rs);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new ResponseParseException("Unable to read data", e);
-        }
-        return null;
-    }
     public Auth getAuthbyToken(String token){
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT `username`, `authToken` FROM authTable WHERE authToken=?";
@@ -178,7 +162,6 @@ public class MySqulDataAccess implements DataAccess {
         }
         return result;
     }
-
     public void deleteAuth(String token){
         var statement = "DELETE FROM authTable WHERE authToken=?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -190,7 +173,6 @@ public class MySqulDataAccess implements DataAccess {
             throw new RuntimeException(e);
         }
     }
-
     //CLEAR ALL
     public void deleteAllUsers() {
         var statement = "TRUNCATE userTable;";

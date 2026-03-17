@@ -20,8 +20,6 @@ public interface DataAccess {
 
     public Game getGamebyGameID(int id);
 
-    public Game getGamebyGameName(String gameName);
-
     public Auth getAuthbyToken(String token);
 
     //GET ALL

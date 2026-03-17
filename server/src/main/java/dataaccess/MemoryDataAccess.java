@@ -27,9 +27,7 @@ public class MemoryDataAccess implements DataAccess {
     public Game getGamebyGameID(int id){
         return myDataBase.getGamebyGameID(id);
     }
-    public Game getGamebyGameName(String gameName){
-        return myDataBase.getGamebyGameName(gameName);
-    }
+
     public Auth getAuthbyToken(String token){
         return myDataBase.getAuthbyToken(token);
     }

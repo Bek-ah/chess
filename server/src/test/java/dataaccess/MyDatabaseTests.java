@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
@@ -52,6 +53,7 @@ public class MyDatabaseTests {
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty user database");
     }
+
     @Test
     @DisplayName("deleteAllGames Test")
     @Order(2)
@@ -59,6 +61,7 @@ public class MyDatabaseTests {
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty game database");
     }
+
     @Test
     @DisplayName("deleteAllAuth Test")
     @Order(3)
@@ -66,6 +69,7 @@ public class MyDatabaseTests {
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty auth database");
     }
+
     @Test
     @DisplayName("deleteOneAuth Test")
     @Order(4)
@@ -77,6 +81,7 @@ public class MyDatabaseTests {
         serverFacade.listGames(auth);
         Assertions.assertEquals(401, serverFacade.getStatusCode(), "Didn't logout");
     }
+
     @Test
     @DisplayName("deleteOneAuth Test 2")
     @Order(5)
@@ -88,11 +93,12 @@ public class MyDatabaseTests {
         serverFacade.listGames(auth);
         Assertions.assertEquals(200, serverFacade.getStatusCode(), "Logged out");
     }
+
     @Test
     @DisplayName("getAllGames positive")
     @Order(6)
     public void getAllGamesP() {
-        //Also the logout test positive
+        //Also the logout test negative
         //create two more games
         String gameName2 = "Test Game 2";
         serverFacade.createGame(new TestCreateRequest(gameName2), auth);
@@ -101,11 +107,95 @@ public class MyDatabaseTests {
 
         //list games using the auth
         TestListResult listResult = serverFacade.listGames(auth);
-        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Server response code was not 200 OK");
-        Assertions.assertEquals(1, listResult.getGames().length, "Missing game(s) in database after restart");
+        Assertions.assertEquals(401, serverFacade.getStatusCode(), "Server response code was not 200 OK");
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("login positive")
+    public void loginPositive() {
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
 
+        serverFacade.logout(auth);
+
+        //test that we can still log in
+        serverFacade.login(TEST_USER);
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Unable to login");
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("login negative")
+    public void loginNegative() {
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+
+        serverFacade.logout(auth);
+        TestUser FALSE_USER = new TestUser("TestUser", "hacker", "test@mail.com");
+        //test that we can still log in
+        serverFacade.login(FALSE_USER);
+        Assertions.assertEquals(401, serverFacade.getStatusCode(), "Unable to login");
+    }
+    @Test
+    @Order(9)
+    @DisplayName("Get Game by gameID Positive")
+    public void getGameIdPositive() {
+        int initialRowCount = getDatabaseRows();
+
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+
+        //create a game
+        String gameName = "Test Game";
+        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+
+        //join the game
+            serverFacade.joinPlayer(new
+
+        TestJoinRequest(ChessGame.TeamColor.BLACK, createResult.getGameID()),auth);
+            Assertions.assertTrue(initialRowCount<getDatabaseRows(),"No new data added to database");
+        //list games using the auth
+        TestListResult listResult = serverFacade.listGames(auth);
+            Assertions.assertEquals(200,serverFacade.getStatusCode(),"Server response code was not 200 OK");
+            Assertions.assertEquals(1,listResult.getGames().length,"Missing game(s) in database after restart");
+
+        TestListEntry game1 = listResult.getGames()[0];
+        Assertions.assertEquals(game1.getGameID(),createResult.getGameID());
+        Assertions.assertEquals(gameName,game1.getGameName(),"Game name changed after restart");
+        Assertions.assertEquals(TEST_USER.getUsername(),game1.getBlackUsername(),
+                "White player username changed after restart");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Get Game by gameID Negative")
+    public void getGameIdNegative() {
+        int initialRowCount = getDatabaseRows();
+
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+
+        //create a game
+        String gameName = "Test Game";
+        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+
+        //join the game
+        serverFacade.joinPlayer(new
+
+                TestJoinRequest(ChessGame.TeamColor.WHITE, createResult.getGameID()),auth);
+        Assertions.assertTrue(initialRowCount<getDatabaseRows(),"No new data added to database");
+        //list games using the auth
+        TestListResult listResult = serverFacade.listGames(auth);
+        Assertions.assertEquals(200,serverFacade.getStatusCode(),"Server response code was not 200 OK");
+        Assertions.assertEquals(1,listResult.getGames().length,"Missing game(s) in database after restart");
+
+        TestListEntry game1 = listResult.getGames()[0];
+        Assertions.assertEquals(game1.getGameID(),createResult.getGameID());
+        Assertions.assertEquals(gameName,game1.getGameName(),"Game name changed after restart");
+        Assertions.assertNotEquals(TEST_USER.getUsername(),game1.getBlackUsername(),
+                "White player username changed after restart");
+    }
 
     private int getDatabaseRows() {
         AtomicInteger rows = new AtomicInteger();
