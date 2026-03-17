@@ -179,34 +179,12 @@ public class MySqulDataAccess implements DataAccess {
         }
         return result;
     }
-    //CLEAR 1
-    public void deleteUser(String username) {
-        var statement = "DELETE FROM userTable WHERE username=?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
     public void deleteAuth(String token){
         var statement = "DELETE FROM authTable WHERE authToken=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, token);
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void deleteGame(int gameID) {
-        var statement = "DELETE FROM gameTable WHERE gameID=?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setInt(1, gameID);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {

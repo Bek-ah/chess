@@ -37,16 +37,11 @@ public class MemoryDataAccess implements DataAccess {
     public HashMap<Integer, Game> getAllGames(){
         return myDataBase.getGameTable();
     }
-    //CLEAR 1
-    public void deleteUser(String username) {
-        myDataBase.deleteUser(username);
-    }
+
     public void deleteAuth(String token){
         myDataBase.deleteAuth(token);
     }
-    public void deleteGame(int gameID) {
-        myDataBase.deleteGame(gameID);
-    }
+
     //CLEAR ALL
     public void deleteAllUsers() {
         myDataBase.deleteAllUsers();

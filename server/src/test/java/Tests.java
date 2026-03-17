@@ -4,7 +4,7 @@ import passoff.server.TestServerFacade;
 import server.Server;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Tests {/*
+public class Tests {
 
     private static TestUser existingUser;
     private static TestUser newUser;
@@ -40,6 +40,7 @@ public class Tests {/*
         TestAuthResult regResult = serverFacade.register(existingUser);
         existingAuth = regResult.getAuthToken();
     }
+
     @DisplayName("LoginEasy")
     public void loginSuccess() {
         TestAuthResult loginResult = serverFacade.login(existingUser);
@@ -56,7 +57,6 @@ public class Tests {/*
         serverFacade.createGame(new TestCreateRequest("Not an empty gameName"), existingAuth);
 
         TestResult clearResult = serverFacade.clear();
-        Server
-        Assertions.assertEquals(clearResult,)
-*/
+
     }
+}

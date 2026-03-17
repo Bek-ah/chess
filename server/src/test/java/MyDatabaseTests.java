@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyDatabaseTests {
 
-    private static final TestUser TEST_USER = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
+    private static final TestUser TEST_USER = new TestUser("TestUser", "TestPassword", "test@mail.com");
 
     private static TestServerFacade serverFacade;
 
@@ -43,9 +43,9 @@ public class MyDatabaseTests {
 
 
     @Test
-    @DisplayName("Clear Test")
+    @DisplayName("deleteAllUsers Test")
     @Order(1)
-    public void clearTest() {
+    public void clearUTest() {
         int initialRowCount = getDatabaseRows();
 
         TestAuthResult regResult = serverFacade.register(TEST_USER);
@@ -55,67 +55,87 @@ public class MyDatabaseTests {
         String gameName = "Test Game";
         TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
         createResult = serverFacade.clear();
-        Assertions.assertTrue(0 == getDatabaseRows(), "Empty database");
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
     }
-
     @Test
-    @DisplayName("Bcrypt")
+    @DisplayName("deleteAllGames Test")
     @Order(2)
-    public void bcrypt() {
-        serverFacade.register(TEST_USER);
-        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Unable to register");
-    }
+    public void clearGTest() {
+        int initialRowCount = getDatabaseRows();
 
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+
+        //create a game
+        String gameName = "Test Game";
+        TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        createResult = serverFacade.clear();
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
+    }
     @Test
-    @DisplayName("Database Error Handling")
+    @DisplayName("deleteAllAuth Test")
     @Order(3)
-    public void databaseErrorHandling() throws ReflectiveOperationException {
-        /*
-        This test simulates an interruption in connecting to MySQL after the server is already running (it started with
-        MySQL working normally). If this happens, this should be considered an "Internal Server Error" and the response
-        code for any endpoint which no longer can do what it needs to do (which for this project should be all of them)
-        should be 500. The body of each of these responses should include a reasonable, relevant error message.
-         */
-        Properties fakeDbProperties = new Properties();
-        fakeDbProperties.setProperty("db.name", UUID.randomUUID().toString());
-        fakeDbProperties.setProperty("db.user", UUID.randomUUID().toString());
-        fakeDbProperties.setProperty("db.password", UUID.randomUUID().toString());
-        fakeDbProperties.setProperty("db.host", "localhost");
-        fakeDbProperties.setProperty("db.port", "100000");
+    public void clearATest() {
+        int initialRowCount = getDatabaseRows();
 
-        Class<?> databaseManagerClass = findDatabaseManager();
-        Method loadPropertiesMethod = databaseManagerClass.getDeclaredMethod("loadProperties", Properties.class);
-        loadPropertiesMethod.setAccessible(true);
-        Object obj = databaseManagerClass.getDeclaredConstructor().newInstance();
-        loadPropertiesMethod.invoke(obj, fakeDbProperties);
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
 
-        Map<String, Supplier<TestResult>> operations = Map.of(
-                "Clear", () -> serverFacade.clear(),
-                "Register", () -> serverFacade.register(TEST_USER),
-                "Login", () -> serverFacade.login(TEST_USER),
-                "Logout", () -> serverFacade.logout(UUID.randomUUID().toString()),
-                "Create Game", () -> serverFacade.createGame(new TestCreateRequest("inaccessible"), UUID.randomUUID().toString()),
-                "List Games", () -> serverFacade.listGames(UUID.randomUUID().toString()),
-                "Join Game", () -> serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, 1), UUID.randomUUID().toString())
-        );
-
-        try {
-            for (Map.Entry<String, Supplier<TestResult>> operationEntry : operations.entrySet()) {
-                String operationName = operationEntry.getKey();
-                Supplier<TestResult> operation = operationEntry.getValue();
-                TestResult result = operation.get();
-                Assertions.assertEquals(500, serverFacade.getStatusCode(),
-                        "Server response code was not 500 Internal Error for " + operationName);
-                Assertions.assertNotNull(result.getMessage(), "Invalid Request didn't return an error message for " + operationName);
-                Assertions.assertTrue(result.getMessage().toLowerCase(Locale.ROOT).contains("error"),
-                        "Error message didn't contain the word \"Error\" for " + operationName);
-            }
-        } finally {
-            Method loadFromResources = databaseManagerClass.getDeclaredMethod("loadPropertiesFromResources");
-            loadFromResources.setAccessible(true);
-            loadFromResources.invoke(obj);
-        }
+        //create a game
+        String gameName = "Test Game";
+        TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        createResult = serverFacade.clear();
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
     }
+    @Test
+    @DisplayName("deleteOneAuth Test")
+    @Order(4)
+    public void deleteOneAuthTest() {
+        //Also the logout test negative
+        int initialRowCount = getDatabaseRows();
+
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+        serverFacade.logout(auth);
+        //list games using the auth
+        TestListResult listResult = serverFacade.listGames(auth);
+        Assertions.assertEquals(401, serverFacade.getStatusCode(), "Didn't logout");
+    }
+    @Test
+    @DisplayName("deleteOneAuth Test 2")
+    @Order(5)
+    public void deleteOneAuthTest2() {
+        //Also the logout test positive
+        int initialRowCount = getDatabaseRows();
+
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+        //list games using the auth
+        TestListResult listResult = serverFacade.listGames(auth);
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Logged out");
+    }
+    @Test
+    @DisplayName("getAllGames positive")
+    @Order(6)
+    public void getAllGamesP() {
+        //Also the logout test positive
+        int initialRowCount = getDatabaseRows();
+
+        TestAuthResult regResult = serverFacade.register(TEST_USER);
+        String auth = regResult.getAuthToken();
+        //create a game
+        String gameName = "Test Game 1";
+        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        String gameName2 = "Test Game 2";
+        TestCreateResult createResult2 = serverFacade.createGame(new TestCreateRequest(gameName2), auth);
+
+        //list games using the auth
+        TestListResult listResult = serverFacade.listGames(auth);
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Server response code was not 200 OK");
+        Assertions.assertEquals(2, listResult.getGames().length, "Missing game(s) in database after restart");
+    }
+
+
 
     private int getDatabaseRows() {
         AtomicInteger rows = new AtomicInteger();

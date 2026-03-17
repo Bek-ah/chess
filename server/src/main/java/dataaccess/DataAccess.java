@@ -26,10 +26,9 @@ public interface DataAccess {
 
     //GET ALL
     public HashMap<Integer, Game> getAllGames();
-    //CLEAR 1
-    public void deleteUser(String username);
+
     public void deleteAuth(String token);
-    public void deleteGame(int gameID);
+
     //CLEAR ALL
     public void deleteAllUsers();
     public void deleteAllAuth();
