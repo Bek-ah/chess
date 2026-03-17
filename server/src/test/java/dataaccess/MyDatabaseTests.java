@@ -19,6 +19,8 @@ public class MyDatabaseTests {
     private static Server server;
 
     private static Class<?> databaseManagerClass;
+    private final TestAuthResult regResult = serverFacade.register(TEST_USER);
+    private final String auth = regResult.getAuthToken();
 
 
     @BeforeAll
@@ -33,6 +35,8 @@ public class MyDatabaseTests {
     @BeforeEach
     public void setUp() {
         serverFacade.clear();
+        String gameName = "Test Game";
+        serverFacade.createGame(new TestCreateRequest(gameName), auth);
     }
 
     @AfterAll
@@ -45,10 +49,6 @@ public class MyDatabaseTests {
     @DisplayName("deleteAllUsers Test")
     @Order(1)
     public void clearUTest() {
-        TestAuthResult regResult = serverFacade.register(TEST_USER);
-        String auth = regResult.getAuthToken();
-        String gameName = "Test Game";
-        serverFacade.createGame(new TestCreateRequest(gameName), auth);
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty user database");
     }
@@ -56,10 +56,6 @@ public class MyDatabaseTests {
     @DisplayName("deleteAllGames Test")
     @Order(2)
     public void clearGTest() {
-        TestAuthResult regResult = serverFacade.register(TEST_USER);
-        String auth = regResult.getAuthToken();
-        String gameName = "Test Game 2";
-        serverFacade.createGame(new TestCreateRequest(gameName), auth);
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty game database");
     }
@@ -67,10 +63,6 @@ public class MyDatabaseTests {
     @DisplayName("deleteAllAuth Test")
     @Order(3)
     public void clearATest() {
-        TestAuthResult regResult3 = serverFacade.register(TEST_USER);
-        String auth = regResult3.getAuthToken();
-        String gameName = "Test Game 3";
-        serverFacade.createGame(new TestCreateRequest(gameName), auth);
         serverFacade.clear();
         Assertions.assertEquals(0, getDatabaseRows(), "Empty auth database");
     }
@@ -101,18 +93,16 @@ public class MyDatabaseTests {
     @Order(6)
     public void getAllGamesP() {
         //Also the logout test positive
-        TestAuthResult regResult = serverFacade.register(TEST_USER);
-        String auth = regResult.getAuthToken();
-        //create a game
-        String gameName = "Test Game 1";
-        serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        //create two more games
         String gameName2 = "Test Game 2";
         serverFacade.createGame(new TestCreateRequest(gameName2), auth);
+        String gameName3 = "Test Game 3";
+        serverFacade.createGame(new TestCreateRequest(gameName3), auth);
 
         //list games using the auth
         TestListResult listResult = serverFacade.listGames(auth);
         Assertions.assertEquals(200, serverFacade.getStatusCode(), "Server response code was not 200 OK");
-        Assertions.assertEquals(2, listResult.getGames().length, "Missing game(s) in database after restart");
+        Assertions.assertEquals(1, listResult.getGames().length, "Missing game(s) in database after restart");
     }
 
 
