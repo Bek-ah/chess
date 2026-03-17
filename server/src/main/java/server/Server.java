@@ -62,6 +62,9 @@ public class Server {
         } catch (AlreadyBoundException b){
             ctx.status(403);
             ctx.result(new Gson().toJson(Map.of("message","Error: already taken")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for joinGame")));
         }
     }
     private void createGame(Context ctx) throws ClassNotFoundException {
@@ -84,12 +87,20 @@ public class Server {
         } catch (WrongArgumentException b){
             ctx.status(400);
             ctx.result(new Gson().toJson(Map.of("message","Error: wrong parameters")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for createGame")));
         }
 
     }
     private void deleteAllGames(Context ctx) throws ResponseParseException {
-        new ClearHandler(dataAccess);
-        ctx.status(200);
+        try {
+            new ClearHandler(dataAccess);
+            ctx.status(200);
+        }  catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for delete all games")));
+        }
     }
     private void register(Context ctx) throws AssertionFailedError, InvalidRequestStateException {
         try {
@@ -104,6 +115,9 @@ public class Server {
         } catch (AssertionError e) {//not enough info catch
             ctx.status(403);
             ctx.result(new Gson().toJson(Map.of("message","Error: not enough info")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for register")));
         }
     }
     private void getGames(Context ctx){
@@ -129,6 +143,9 @@ public class Server {
         } catch (AccessDeniedException v){
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for getGames")));
         }
     }
     private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
@@ -145,6 +162,9 @@ public class Server {
         } catch (NoSuchElementException f){
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message","Error: no such user found")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for login")));
         }
     }
     private void logout(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
@@ -154,6 +174,9 @@ public class Server {
         } catch (NoSuchElementException d) {
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for logout")));
         }
     }
 
