@@ -12,12 +12,6 @@ public class DataBase {
     final private HashMap<Integer, Game> gameTable = new HashMap<>();
 
     public DataBase(){}
-    public HashMap<String, User> getUserTable(){
-        return userTable;
-    }
-    public HashMap<String, Auth> getAuthTable(){
-        return authTable;
-    }
     public HashMap<Integer, Game> getGameTable(){
         return gameTable;
     }
@@ -30,14 +24,8 @@ public class DataBase {
     public void deleteAllGames() {
         gameTable.clear();
     }
-    public void deleteUser(String username) {
-        userTable.remove(username);
-    }
     public void deleteAuth(String token){
         authTable.remove(token);
-    }
-    public void deleteGame(int gameID) {
-        gameTable.remove(gameID);
     }
     public User getUserbyUsername(String username){
         if (userTable.get(username)!=null){

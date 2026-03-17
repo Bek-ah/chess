@@ -1,4 +1,3 @@
-import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
@@ -8,7 +7,6 @@ import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MyDatabaseTests {
@@ -46,59 +44,44 @@ public class MyDatabaseTests {
     @DisplayName("deleteAllUsers Test")
     @Order(1)
     public void clearUTest() {
-        int initialRowCount = getDatabaseRows();
-
         TestAuthResult regResult = serverFacade.register(TEST_USER);
         String auth = regResult.getAuthToken();
-
-        //create a game
         String gameName = "Test Game";
-        TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
-        createResult = serverFacade.clear();
-        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
+        serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        serverFacade.clear();
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty user database");
     }
     @Test
     @DisplayName("deleteAllGames Test")
     @Order(2)
     public void clearGTest() {
-        int initialRowCount = getDatabaseRows();
-
         TestAuthResult regResult = serverFacade.register(TEST_USER);
         String auth = regResult.getAuthToken();
-
-        //create a game
-        String gameName = "Test Game";
-        TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
-        createResult = serverFacade.clear();
-        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
+        String gameName = "Test Game 2";
+        serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        serverFacade.clear();
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty game database");
     }
     @Test
     @DisplayName("deleteAllAuth Test")
     @Order(3)
     public void clearATest() {
-        int initialRowCount = getDatabaseRows();
-
-        TestAuthResult regResult = serverFacade.register(TEST_USER);
-        String auth = regResult.getAuthToken();
-
-        //create a game
-        String gameName = "Test Game";
-        TestResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
-        createResult = serverFacade.clear();
-        Assertions.assertEquals(0, getDatabaseRows(), "Empty database");
+        TestAuthResult regResult3 = serverFacade.register(TEST_USER);
+        String auth = regResult3.getAuthToken();
+        String gameName = "Test Game 3";
+        serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        serverFacade.clear();
+        Assertions.assertEquals(0, getDatabaseRows(), "Empty auth database");
     }
     @Test
     @DisplayName("deleteOneAuth Test")
     @Order(4)
     public void deleteOneAuthTest() {
-        //Also the logout test negative
-        int initialRowCount = getDatabaseRows();
-
         TestAuthResult regResult = serverFacade.register(TEST_USER);
         String auth = regResult.getAuthToken();
         serverFacade.logout(auth);
         //list games using the auth
-        TestListResult listResult = serverFacade.listGames(auth);
+        serverFacade.listGames(auth);
         Assertions.assertEquals(401, serverFacade.getStatusCode(), "Didn't logout");
     }
     @Test
@@ -106,12 +89,10 @@ public class MyDatabaseTests {
     @Order(5)
     public void deleteOneAuthTest2() {
         //Also the logout test positive
-        int initialRowCount = getDatabaseRows();
-
         TestAuthResult regResult = serverFacade.register(TEST_USER);
         String auth = regResult.getAuthToken();
         //list games using the auth
-        TestListResult listResult = serverFacade.listGames(auth);
+        serverFacade.listGames(auth);
         Assertions.assertEquals(200, serverFacade.getStatusCode(), "Logged out");
     }
     @Test
@@ -119,15 +100,13 @@ public class MyDatabaseTests {
     @Order(6)
     public void getAllGamesP() {
         //Also the logout test positive
-        int initialRowCount = getDatabaseRows();
-
         TestAuthResult regResult = serverFacade.register(TEST_USER);
         String auth = regResult.getAuthToken();
         //create a game
         String gameName = "Test Game 1";
-        TestCreateResult createResult = serverFacade.createGame(new TestCreateRequest(gameName), auth);
+        serverFacade.createGame(new TestCreateRequest(gameName), auth);
         String gameName2 = "Test Game 2";
-        TestCreateResult createResult2 = serverFacade.createGame(new TestCreateRequest(gameName2), auth);
+        serverFacade.createGame(new TestCreateRequest(gameName2), auth);
 
         //list games using the auth
         TestListResult listResult = serverFacade.listGames(auth);
