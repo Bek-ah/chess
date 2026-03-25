@@ -42,11 +42,17 @@ public class ServerFacade {
     }
     public Auth register(String username, String password, String email) throws AccessDeniedException {
         User registerUser = new User(username, password, email);
-        HttpRequest.BodyPublisher body = makeRequestBody(registerUser);
         var request = buildRequest("POST","/user", registerUser, null);
-        String response = String.valueOf(sendRequest(request).headers().firstValue("Authorization"));
-        Auth auth = new Auth(username, response);
-        return auth;
+        var response = sendRequest(request);
+        Auth returnAuth;
+        if (response.statusCode()!=200){
+            returnAuth = new Auth(username, "");
+        } else {
+            JsonObject auth1 = JsonParser.parseString(response.body()).getAsJsonObject();
+            String auth2 = auth1.get("authToken").getAsString();
+            returnAuth = new Auth(username, auth2);
+        }
+        return returnAuth;
     }
     public ArrayList<Game> getGames() throws AccessDeniedException, HttpTimeoutException {
         var request = buildRequest("GET","/game",null,  null);
