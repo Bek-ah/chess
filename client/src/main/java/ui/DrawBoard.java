@@ -11,19 +11,21 @@ import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static ui.EscapeSequences.*;
 
-public class WhiteBoard {
+public class DrawBoard {
         // Board dimensions.
         private static final int BOARD_SIZE_IN_SQUARES = 8;
         private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
         private static final int LINE_WIDTH_IN_PADDED_CHARS = 0;
-
-        public static void main(String[] args) {
-            boolean blackView = false;
-            if (args != null){
+        public static boolean blackView = false;
+        public static void main(String[] args){
+            ChessGame game = new ChessGame();
+            DrawBoard(true, game);
+        }
+        public static void DrawBoard(boolean blackPlayer, ChessGame game) {
+            if (blackPlayer == true){
                 blackView = true;
             }
             var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-            ChessGame game = new ChessGame();
             game.getBoard().resetBoard();
 
             out.print(ERASE_SCREEN);
@@ -39,10 +41,13 @@ public class WhiteBoard {
         }
 
         private static void drawLetters(PrintStream out) {
-
+            String[] headers;
             setBlack(out);
-
-            String[] headers = { "   ", " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H" , "   "};
+            if (blackView == false) {
+                headers = new String[]{"   ", " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H", "   "};
+            } else {
+                headers = new String[]{"   ", " H ", " G ", " F ", " E ", " D ", " C ", " B ", " A", "   "};
+            }
             for (int boardCol = 0; boardCol <= BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 drawHeader(out, headers[boardCol]);
 
@@ -73,7 +78,12 @@ public class WhiteBoard {
         }
 
         private static void drawChessBoard(PrintStream out, ChessBoard game) {
-            String[] rows = { " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ", "   ", "   "};
+            String[] rows;
+            if (blackView == true){
+                rows = new String[]{" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", "   ", "   "};
+            } else {
+                rows = new String[]{" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ", "   ", "   "};
+            }
             for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
                 printHeaderText(out, rows[boardRow]);
                 drawRowOfSquares(out, game, boardRow+1);
@@ -123,13 +133,17 @@ public class WhiteBoard {
                         int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
 
                         out.print(EMPTY.repeat(prefixLength));
-                        if (((boardCol+row)%2)==1){
+                        int blackBoard = blackView ? 1 : 0;
+                        if (((boardCol+row+blackBoard)%2)==1){
                             out.print(SET_BG_COLOR_LIGHT_GREY);
                         } else {
                             out.print(SET_BG_COLOR_DARK_GREY);
                         }
-                        //TO FLIP JUST TAKE OUT -----------------------------------> 9-
-                        printPlayer(out, pieceText(out, game, new ChessPosition(9-row, boardCol+1)));
+                        if (blackView == true){
+                            printPlayer(out, pieceText(out, game, new ChessPosition(row, boardCol+1)));
+                        } else {
+                            printPlayer(out, pieceText(out, game, new ChessPosition(9-row, boardCol+1)));
+                        }
                         out.print(EMPTY.repeat(suffixLength));
                     }
                     else {
@@ -162,7 +176,7 @@ public class WhiteBoard {
         }
 
         private static void setBlack(PrintStream out) {
-            out.print(SET_TEXT_COLOR_RED);
+            out.print(SET_TEXT_COLOR_BLACK);
         }
         private static void printPlayer(PrintStream out, String piece) {
             out.print(" " + piece + " ");
