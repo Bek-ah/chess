@@ -30,7 +30,13 @@ public class ServerFacade {
         var request = buildRequest("DELETE", "/db", null);
         sendRequest(request);
     }
-    public void register(){}
+    public int register(String username, String password, String email) throws AccessDeniedException {
+        User registerUser = new User(username, password, email);
+        HttpRequest.BodyPublisher body = makeRequestBody(registerUser);
+        var request = buildRequest("POST","/user", registerUser);
+        var response = sendRequest(request);
+        return response.statusCode();
+    }
     public ArrayList<Game> getGames() throws AccessDeniedException, HttpTimeoutException {
         var request = buildRequest("GET","/game",null);
         var response = sendRequest(request);
@@ -38,9 +44,12 @@ public class ServerFacade {
         //gameList.add(response.body(), Game.class);
         return gameList;
     }
-    public void login(String username, String password){
+    public int login(String username, String password) throws AccessDeniedException {
         User loginUser = new User(username, password, null);
-        var request = buildRequest("POST","/session", makeRequestBody(loginUser));
+        HttpRequest.BodyPublisher body = makeRequestBody(loginUser);
+        var request = buildRequest("POST","/session", loginUser);
+        var response = sendRequest(request);
+        return response.statusCode();
     }
     public void logout() throws AccessDeniedException {
         var request = buildRequest("DELETE", "/session", null);
@@ -80,5 +89,5 @@ public class ServerFacade {
         }
         return null;
     }
-    private boolean isSuccessful(int status){ return status / 100 == 2; }
+    public boolean isSuccessful(int status){ return status / 100 == 2; }
 }

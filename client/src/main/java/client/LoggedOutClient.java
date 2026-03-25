@@ -1,5 +1,6 @@
 package client;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
 
 public class LoggedOutClient {
@@ -9,7 +10,7 @@ public class LoggedOutClient {
             "Exit chess program: 'quit'\n" +
             "Help remembering commands: 'help'\n";
 
-    public LoggedOutClient(String serverURL) {
+    public LoggedOutClient(String serverURL) throws AccessDeniedException {
         System.out.println("♕ 240 Chess Type 'help' to get started ♕");
         System.out.print(helpMessage);
         Scanner scanner = new Scanner(System.in);
@@ -27,10 +28,25 @@ public class LoggedOutClient {
                 System.out.print("Password: ");
                 String password = scanner.nextLine();
                 ServerFacade serv = new ServerFacade(serverURL);
-                serv.login(username, password);
+                if (serv.isSuccessful(serv.login(username, password))){
+                    new LoggedInClient(serverURL);
+                } else {
+                    System.out.print("Error: Unauthorized please try again or register\n");
+                }
             }  else if (command.equals("register")){
-                System.out.print("register stub\n");
-            }  else {
+                System.out.print("Username: ");
+                String username = scanner.nextLine();
+                System.out.print("Password: ");
+                String password = scanner.nextLine();
+                System.out.print("Email: ");
+                String email = scanner.nextLine();
+                ServerFacade serv = new ServerFacade(serverURL);
+                if (serv.isSuccessful(serv.register(username, password, email))){
+                    new LoggedInClient(serverURL);
+                } else {
+                    System.out.print("Error: user already exists\n");
+                }
+            } else if (!command.equals("quit")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
             }
         }
