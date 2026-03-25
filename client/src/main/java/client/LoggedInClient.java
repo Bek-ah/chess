@@ -39,10 +39,10 @@ public class LoggedInClient {
             } else if (command.equals("create")) {
                 System.out.print("Game name: ");
                 String gameName = scanner.nextLine();
-                int status = serv.createGame(gameName, auth);
-                if (!serv.isSuccessful(status)) {
+                int gameID = serv.createGame(gameName, auth);
+                if (gameID == 401) {
                     System.out.print("Error: unable to make new game\n");
-                    System.out.print(status);
+                    System.out.print(gameID);
                 }
             } else if (command.equals("list")) {
                 serv.getGames(auth, null);

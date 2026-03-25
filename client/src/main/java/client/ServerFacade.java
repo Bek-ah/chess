@@ -27,21 +27,32 @@ public class ServerFacade {
             Game game = getGames(auth, gameID);
             Game joinGame = new Game(gameID, game.getName());
             var request = buildRequest("PUT", "/game", joinGame, auth.authToken());
+            Gson gson = new Gson();
             var response = sendRequest(request);
-            return game;
+            JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
+            Game joinedGame = gson.fromJson(games,Game.class);
+            return joinedGame;
         } catch (AccessDeniedException e){
             System.out.println("Error: unauthorized");
         }
         return null;
     }
-    public int createGame(String gameName, Auth auth) throws AccessDeniedException {
-        //Game newGame = new Game(null,gameName);
-        String gameNameJson = "{\"gameName\":\"" + gameName + "\"}";
-        Map<String, String> gameName2 = Map.of("gameName",gameName);
-        String json = new Gson().toJson(gameName2);
-        var request = buildRequest("POST", "/game", gameName2, auth.authToken());
-        var response = sendRequest(request);
-        return response.statusCode();//it's returning 500 Internal Server error for newGame and gameName
+    public int createGame(String gameName, Auth auth) {
+        try {
+            if (gameName.isEmpty()){
+                return 401;
+            }
+            Map<String, String> gameName2 = Map.of("gameName", gameName);
+            var request = buildRequest("POST", "/game", gameName2, auth.authToken());
+            HttpResponse<java.lang.String> response = sendRequest(request);
+            JsonObject auth1 = JsonParser.parseString(response.body()).getAsJsonObject();
+            int auth3 = auth1.get("gameID").getAsInt();
+            int status = response.statusCode();
+            return auth3;
+        } catch (AccessDeniedException e) {
+            System.out.println("Error: Access denied");
+        }
+        return 401;
     }
     public void deleteAll() throws AccessDeniedException {
         var request = buildRequest("DELETE", "/db", null, null);
@@ -74,6 +85,7 @@ public class ServerFacade {
             ArrayList<Game> gameList;
             if (response.statusCode() != 200) {
                 System.out.println("Error: Unauthorized");
+                return null;
             } else {
                 JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
                 JsonArray gameList1 = games.getAsJsonArray("games");

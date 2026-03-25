@@ -1,6 +1,7 @@
 package client;
 
 import model.Auth;
+import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -84,42 +85,51 @@ public class ServerFacadeTests {
     @DisplayName("getPos")
     public void getPos() {
         Auth token = facade.register("getPos","getPos","email");
-        //facade.getGames(token);
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
-    }    @Test
+        Game game = facade.getGames(token,null);
+        Assertions.assertTrue(game == null);
+    }
+    @Test
     @Order(8)
     @DisplayName("getNeg")
     public void getNeg() {
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
+        Auth token = new Auth("getNeg", "");
+        facade.register("getNeg","getPos","email");
+        var nothing = facade.getGames(token,654);
+        Assertions.assertTrue(nothing == null);
     }    @Test
     @Order(9)
     @DisplayName("joinPos")
     public void joinPos() {
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
+        String playerColor = "WHITE";
+        Auth token = facade.register("joinPos5","pass","email");
+        int id = facade.createGame("Testing",token);
+        Game game = facade.joinGame(playerColor,id,token);
+        Assertions.assertTrue(game.getWhiteUsername().equals("joinPos7"));
     }
     @Test
     @Order(10)
     @DisplayName("joinNeg")
     public void joinNeg() {
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
+        Auth token = facade.register("joinNeg6","pass","email");
+        int id = facade.createGame("Test",token);
+        Game game = facade.joinGame("<WHITE>",id,token);
+        Assertions.assertFalse(game.getWhiteUsername().equals("joinPos7"));
     }
     @Test
     @Order(11)
     @DisplayName("createPos")
     public void createPos() {
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
+        var authData = facade.register("createPos10", "1","1");
+        int ret = facade.createGame("Testing",authData);
+        Assertions.assertTrue(ret!=401);
     }
     @Test
     @Order(12)
     @DisplayName("createNeg")
     public void createNeg() {
-        var authData = facade.login("1", "1");
-        Assertions.assertFalse(authData.authToken().length() > 10);
+        Auth authData = facade.register("createNeg15", "1","1");
+        int ret = facade.createGame("",authData);
+        Assertions.assertEquals(401, ret);
     }
 
 
