@@ -1,5 +1,6 @@
 package client;
 
+import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
 
@@ -10,7 +11,7 @@ public class LoggedOutClient {
             "Exit chess program: 'quit'\n" +
             "Help remembering commands: 'help'\n";
 
-    public LoggedOutClient(String serverURL) throws AccessDeniedException {
+    public LoggedOutClient(String serverURL) throws AccessDeniedException, HttpTimeoutException {
         System.out.println("♕ 240 Chess Type 'help' to get started ♕");
         System.out.print(helpMessage);
         Scanner scanner = new Scanner(System.in);

@@ -20,11 +20,18 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void joinGame(){}
-    public Game createGame(String gameName) throws AccessDeniedException, HttpTimeoutException {
-        var request = buildRequest("POST", "/game", makeRequestBody(gameName));
+    public void joinGame(String playerColor, Integer gameID) throws AccessDeniedException {
+        Game joinGame = new Game(gameID, playerColor);
+        var request = buildRequest("PUT","/game",joinGame);
         var response = sendRequest(request);
-        return handleResponse(response, Game.class);
+        ArrayList<Game> gameList = new ArrayList<>();
+        System.out.print(response);
+    }
+    public int createGame(String gameName) throws AccessDeniedException, HttpTimeoutException {
+        Game newGame = new Game(null,gameName);
+        var request = buildRequest("POST", "/game", gameName);
+        var response = sendRequest(request);
+        return response.statusCode();//it's returning 500 Internal Server error for newGame and gameName
     }
     public void deleteAll() throws AccessDeniedException {
         var request = buildRequest("DELETE", "/db", null);
@@ -41,12 +48,12 @@ public class ServerFacade {
         var request = buildRequest("GET","/game",null);
         var response = sendRequest(request);
         ArrayList<Game> gameList = new ArrayList<>();
+        System.out.print(response);
         //gameList.add(response.body(), Game.class);
         return gameList;
     }
     public int login(String username, String password) throws AccessDeniedException {
         User loginUser = new User(username, password, null);
-        HttpRequest.BodyPublisher body = makeRequestBody(loginUser);
         var request = buildRequest("POST","/session", loginUser);
         var response = sendRequest(request);
         return response.statusCode();
