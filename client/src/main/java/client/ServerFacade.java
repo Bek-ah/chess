@@ -1,8 +1,6 @@
 package client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -23,16 +21,17 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void joinGame(String playerColor, Integer gameID) throws AccessDeniedException {
-        Game joinGame = new Game(gameID, playerColor);
-        var request = buildRequest("PUT","/game",joinGame, null);
-        var response = sendRequest(request).statusCode();
-        //Game game = response.game();
-        System.out.print(response);
+    public Game joinGame(String playerColor, Integer gameID, Auth auth) throws AccessDeniedException, HttpTimeoutException {
+        Game game = getGames(auth, gameID);
+        Game joinGame = new Game(gameID, game.getName());
+        var request = buildRequest("PUT","/game", joinGame, auth.authToken());
+        var response = sendRequest(request);
+
+        return game;
     }
-    public int createGame(String gameName) throws AccessDeniedException, HttpTimeoutException {
+    public int createGame(String gameName, Auth auth) throws AccessDeniedException, HttpTimeoutException {
         Game newGame = new Game(null,gameName);
-        var request = buildRequest("POST", "/game", gameName, null);
+        var request = buildRequest("POST", "/game", gameName, auth.authToken());
         var response = sendRequest(request);
         return response.statusCode();//it's returning 500 Internal Server error for newGame and gameName
     }
@@ -54,13 +53,33 @@ public class ServerFacade {
         }
         return returnAuth;
     }
-    public ArrayList<Game> getGames() throws AccessDeniedException, HttpTimeoutException {
-        var request = buildRequest("GET","/game",null,  null);
+    public Game getGames(Auth auth, Integer getGameId) throws AccessDeniedException, HttpTimeoutException {
+        var request = buildRequest("GET","/game",null,  auth.authToken());
         var response = sendRequest(request);
-        ArrayList<Game> gameList = new ArrayList<>();
-        System.out.print(response);
-        //gameList.add(response.body(), Game.class);
-        return gameList;
+        ArrayList<Game> gameList;
+        if (response.statusCode()!=200){
+            System.out.println("Error: Unauthorized");
+        } else {
+            JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
+            JsonArray gameList1 = games.getAsJsonArray("games");
+            System.out.println("Game ID:   Game Name:");
+            for (JsonElement game : gameList1){
+                JsonObject g = game.getAsJsonObject();
+                int id = g.get("gameID").getAsInt();
+                String gn = g.get("gameName").getAsString();
+                if (getGameId == null) {
+                    System.out.println(id + ": " + gn);
+                } else if (getGameId == id){
+                    Gson gson = new Gson();
+                    JsonElement gameRet1 = g.get("game");
+                    //String gameRet2 = gameRet1.getAsString();
+                    Game gameRet = gson.fromJson(gameRet1, Game.class);
+                    System.out.println(id + ": " + gn);
+                    return gameRet;
+                }
+            }
+        }
+        return null;
     }
     public Auth login(String username, String password) throws AccessDeniedException {
         User loginUser = new User(username, password, null);
@@ -87,9 +106,9 @@ public class ServerFacade {
                 .method(method, makeRequestBody(body));
         if (body != null){
             request.setHeader("Content-Type", "application/json");
-            if (authToken != null) {
-                request.setHeader("Authorization", authToken);
-            }
+        }
+        if (authToken != null) {
+            request.setHeader("Authorization", authToken);
         }
         return request.build();
     }

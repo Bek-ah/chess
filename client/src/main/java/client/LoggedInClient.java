@@ -19,7 +19,7 @@ public class LoggedInClient {
             "Observe a Game: 'observe' <GAME ID>\n" +
             "Help remembering commands: 'help'\n";
 
-    public LoggedInClient(String serverURL, Auth authToken) throws AccessDeniedException, HttpTimeoutException {
+    public LoggedInClient(String serverURL, Auth auth) throws AccessDeniedException, HttpTimeoutException {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
         var command = "";
@@ -30,36 +30,47 @@ public class LoggedInClient {
             command = line.toLowerCase();
             if (command.equals("help")) {
                 System.out.print(helpMessage);
-            } else if (command.equals("logout")){
+            } else if (command.equals("logout")) {
                 serv.logout();
                 break;
-            } else if (command.equals("create")){
+            } else if (command.equals("create")) {
                 System.out.print("Game name: ");
                 String gameName = scanner.nextLine();
-                if (!serv.isSuccessful(serv.createGame(gameName))){
+                int status = serv.createGame(gameName, auth);
+                if (!serv.isSuccessful(status)) {
                     System.out.print("Error: unable to make new game\n");
+                    System.out.print(status);
                 }
-            } else if (command.equals("list")){
-                serv.getGames();
-            } else if (command.equals("play")){
+            } else if (command.equals("list")) {
+                serv.getGames(auth, null);
+            } else if (command.equals("play")) {
                 System.out.print("Please enter the gameID: ");
-                Integer gameID = scanner.nextInt(); //scan as a string and check if it can be scanned to int
-                scanner.nextLine();
-                System.out.print("Select <BLACK> or <WHITE>: ");
-                String playerColor = scanner.nextLine();
-                if (playerColor.toUpperCase().equals("BLACK")){
-                    serv.joinGame(playerColor,gameID);
-                    new DrawBoard().DrawBoard(true, new ChessGame());
-                } else if (playerColor.toUpperCase().equals("WHITE")) {
-                    serv.joinGame(playerColor,gameID);
-                    new DrawBoard().DrawBoard(false, new ChessGame());
+                Integer gameID;
+                if (scanner.hasNextInt()) {
+                    gameID = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Select <BLACK> or <WHITE>: ");
+                    String playerColor = scanner.nextLine().toUpperCase();
+                    if (playerColor.equals("BLACK")) {
+                        serv.joinGame(playerColor, gameID, auth);
+                        new DrawBoard().DrawBoard(true, new ChessGame());
+                    } else if (playerColor.equals("WHITE")) {
+                        serv.joinGame(playerColor, gameID, auth);
+                        new DrawBoard().DrawBoard(false, new ChessGame());
+                    } else {
+                        System.out.println("Please type black or white");
+                    }
                 } else {
-                    System.out.println("Please type black or white");
+                    System.out.println("Error: Game ID must be a number");
                 }
-            } else if (command.equals("observe")){
-                new DrawBoard().DrawBoard(false, new ChessGame());
+            } else if (command.equals("observe")) {
+                System.out.print("Game ID: ");
+                Integer id = scanner.nextInt();
+                serv.getGames(auth, id);
+                DrawBoard.DrawBoard(false, serv.getGames(auth, id).getGame());
             } else if (!command.equals("quit")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
             }
         }
-    }}
+    }
+}
