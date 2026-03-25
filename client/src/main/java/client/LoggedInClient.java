@@ -1,8 +1,14 @@
 package client;
 
+import chess.ChessGame;
+import model.Auth;
+import ui.DrawBoard;
+
 import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 public class LoggedInClient {
     private static String helpMessage = "Options (not case sensative):\n" +
@@ -13,7 +19,7 @@ public class LoggedInClient {
             "Observe a Game: 'observe' <GAME ID>\n" +
             "Help remembering commands: 'help'\n";
 
-    public LoggedInClient(String serverURL) throws AccessDeniedException, HttpTimeoutException {
+    public LoggedInClient(String serverURL, Auth authToken) throws AccessDeniedException, HttpTimeoutException {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
         var command = "";
@@ -37,12 +43,21 @@ public class LoggedInClient {
                 serv.getGames();
             } else if (command.equals("play")){
                 System.out.print("Please enter the gameID: ");
-                Integer gameID = scanner.nextInt();
-                System.out.print("Type <WHITE> or <BLACK>");
+                Integer gameID = scanner.nextInt(); //scan as a string and check if it can be scanned to int
+                scanner.nextLine();
+                System.out.print("Select <BLACK> or <WHITE>: ");
                 String playerColor = scanner.nextLine();
-                serv.joinGame(playerColor,gameID);
+                if (playerColor.toUpperCase().equals("BLACK")){
+                    serv.joinGame(playerColor,gameID);
+                    new DrawBoard().DrawBoard(true, new ChessGame());
+                } else if (playerColor.toUpperCase().equals("WHITE")) {
+                    serv.joinGame(playerColor,gameID);
+                    new DrawBoard().DrawBoard(false, new ChessGame());
+                } else {
+                    System.out.println("Please type black or white");
+                }
             } else if (command.equals("observe")){
-                System.out.print("observe stub\n");
+                new DrawBoard().DrawBoard(false, new ChessGame());
             } else if (!command.equals("quit")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
             }

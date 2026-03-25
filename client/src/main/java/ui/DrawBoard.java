@@ -17,10 +17,10 @@ public class DrawBoard {
         private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
         private static final int LINE_WIDTH_IN_PADDED_CHARS = 0;
         public static boolean blackView = false;
-        public static void main(String[] args){
+        /*public static void main(String[] args){
             ChessGame game = new ChessGame();
             DrawBoard(true, game);
-        }
+        }*/
         public static void DrawBoard(boolean blackPlayer, ChessGame game) {
             if (blackPlayer == true){
                 blackView = true;

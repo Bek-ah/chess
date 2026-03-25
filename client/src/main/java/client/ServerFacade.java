@@ -1,6 +1,9 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import model.Auth;
 import model.Game;
 import model.User;
 
@@ -22,53 +25,65 @@ public class ServerFacade {
 
     public void joinGame(String playerColor, Integer gameID) throws AccessDeniedException {
         Game joinGame = new Game(gameID, playerColor);
-        var request = buildRequest("PUT","/game",joinGame);
-        var response = sendRequest(request);
-        ArrayList<Game> gameList = new ArrayList<>();
+        var request = buildRequest("PUT","/game",joinGame, null);
+        var response = sendRequest(request).statusCode();
+        //Game game = response.game();
         System.out.print(response);
     }
     public int createGame(String gameName) throws AccessDeniedException, HttpTimeoutException {
         Game newGame = new Game(null,gameName);
-        var request = buildRequest("POST", "/game", gameName);
+        var request = buildRequest("POST", "/game", gameName, null);
         var response = sendRequest(request);
         return response.statusCode();//it's returning 500 Internal Server error for newGame and gameName
     }
     public void deleteAll() throws AccessDeniedException {
-        var request = buildRequest("DELETE", "/db", null);
+        var request = buildRequest("DELETE", "/db", null, null);
         sendRequest(request);
     }
-    public int register(String username, String password, String email) throws AccessDeniedException {
+    public Auth register(String username, String password, String email) throws AccessDeniedException {
         User registerUser = new User(username, password, email);
         HttpRequest.BodyPublisher body = makeRequestBody(registerUser);
-        var request = buildRequest("POST","/user", registerUser);
-        var response = sendRequest(request);
-        return response.statusCode();
+        var request = buildRequest("POST","/user", registerUser, null);
+        String response = String.valueOf(sendRequest(request).headers().firstValue("Authorization"));
+        Auth auth = new Auth(username, response);
+        return auth;
     }
     public ArrayList<Game> getGames() throws AccessDeniedException, HttpTimeoutException {
-        var request = buildRequest("GET","/game",null);
+        var request = buildRequest("GET","/game",null,  null);
         var response = sendRequest(request);
         ArrayList<Game> gameList = new ArrayList<>();
         System.out.print(response);
         //gameList.add(response.body(), Game.class);
         return gameList;
     }
-    public int login(String username, String password) throws AccessDeniedException {
+    public Auth login(String username, String password) throws AccessDeniedException {
         User loginUser = new User(username, password, null);
-        var request = buildRequest("POST","/session", loginUser);
+        var request = buildRequest("POST","/session", loginUser, null);
         var response = sendRequest(request);
-        return response.statusCode();
+        Auth returnAuth;
+        if (response.statusCode()!=200){
+            returnAuth = new Auth(username, "");
+        } else {
+            JsonObject auth1 = JsonParser.parseString(response.body()).getAsJsonObject();
+            String auth2 = auth1.get("authToken").getAsString();
+            returnAuth = new Auth(username, auth2);
+        }
+        return returnAuth;
     }
     public void logout() throws AccessDeniedException {
-        var request = buildRequest("DELETE", "/session", null);
+        var request = buildRequest("DELETE", "/session", null, null);
         sendRequest(request);
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body){
+    private HttpRequest buildRequest(String method, String path, Object body, String authToken){
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null){
             request.setHeader("Content-Type", "application/json");
+            if (authToken != null) {
+                request.setHeader("Authorization", authToken);
+            }
         }
         return request.build();
     }

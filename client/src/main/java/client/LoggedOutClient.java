@@ -1,5 +1,7 @@
 package client;
 
+import model.Auth;
+
 import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
@@ -29,8 +31,9 @@ public class LoggedOutClient {
                 System.out.print("Password: ");
                 String password = scanner.nextLine();
                 ServerFacade serv = new ServerFacade(serverURL);
-                if (serv.isSuccessful(serv.login(username, password))){
-                    new LoggedInClient(serverURL);
+                Auth auth = serv.login(username, password);
+                if (!auth.authToken().isEmpty()){
+                    new LoggedInClient(serverURL, auth);
                 } else {
                     System.out.print("Error: Unauthorized please try again or register\n");
                 }
@@ -42,8 +45,9 @@ public class LoggedOutClient {
                 System.out.print("Email: ");
                 String email = scanner.nextLine();
                 ServerFacade serv = new ServerFacade(serverURL);
-                if (serv.isSuccessful(serv.register(username, password, email))){
-                    new LoggedInClient(serverURL);
+                Auth auth = serv.register(username, password, email);
+                if (auth != null){
+                    new LoggedInClient(serverURL,auth);
                 } else {
                     System.out.print("Error: user already exists\n");
                 }
