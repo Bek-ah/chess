@@ -37,7 +37,9 @@ public class ServerFacade {
     public int createGame(String gameName, Auth auth) throws AccessDeniedException {
         //Game newGame = new Game(null,gameName);
         String gameNameJson = "{\"gameName\":\"" + gameName + "\"}";
-        var request = buildRequest("POST", "/game", gameNameJson, auth.authToken());
+        Map<String, String> gameName2 = Map.of("gameName",gameName);
+        String json = new Gson().toJson(gameName2);
+        var request = buildRequest("POST", "/game", gameName2, auth.authToken());
         var response = sendRequest(request);
         return response.statusCode();//it's returning 500 Internal Server error for newGame and gameName
     }

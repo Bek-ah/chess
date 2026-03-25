@@ -83,6 +83,8 @@ public class ServerFacadeTests {
     @Order(7)
     @DisplayName("getPos")
     public void getPos() {
+        Auth token = facade.register("getPos","getPos","email");
+        //facade.getGames(token);
         var authData = facade.login("1", "1");
         Assertions.assertFalse(authData.authToken().length() > 10);
     }    @Test
