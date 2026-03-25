@@ -71,7 +71,8 @@ public class Server {
         try {
             String authToken = ctx.header("Authorization");
             String gameName = ctx.body();
-            String gn = new Gson().fromJson(gameName, Game.class).getName();
+            Map<String, Object> map = new Gson().fromJson(gameName, Map.class);
+            String gn = (String) map.get("gameName");
             if (gn==null || gameName.isEmpty() || authToken == null){
                 ctx.status(400);
                 ctx.result(new Gson().toJson(Map.of("message","Error: Bad request")));
@@ -149,7 +150,7 @@ public class Server {
             ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for getGames")));
         }
     }
-    private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
+    private void login(Context ctx) throws MissingFormatArgumentException, NoSuchElementException {
         try{
             Auth obj = new LoginHandler().login(ctx.body(),dataAccess);
             ctx.status(200);
@@ -168,7 +169,7 @@ public class Server {
             ctx.result(new Gson().toJson(Map.of("message","500 Internal server error for login")));
         }
     }
-    private void logout(Context ctx) throws MissingFormatArgumentException, NoSuchElementException, AccessDeniedException {
+    private void logout(Context ctx) throws MissingFormatArgumentException, NoSuchElementException {
         try{
             new LogoutHandler().logout(ctx.header("Authorization"), dataAccess);
             ctx.status(200);

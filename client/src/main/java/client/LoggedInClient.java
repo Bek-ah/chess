@@ -31,8 +31,11 @@ public class LoggedInClient {
             if (command.equals("help")) {
                 System.out.print(helpMessage);
             } else if (command.equals("logout")) {
-                serv.logout();
-                break;
+                if (serv.logout(auth)==200) {
+                    break;
+                } else {
+                    System.out.println("Error: Already logged out");
+                }
             } else if (command.equals("create")) {
                 System.out.print("Game name: ");
                 String gameName = scanner.nextLine();

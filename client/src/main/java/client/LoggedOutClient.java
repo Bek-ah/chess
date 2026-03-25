@@ -46,7 +46,7 @@ public class LoggedOutClient {
                 String email = scanner.nextLine();
                 ServerFacade serv = new ServerFacade(serverURL);
                 Auth auth = serv.register(username, password, email);
-                if (auth != null){
+                if (!auth.authToken().isEmpty()){
                     new LoggedInClient(serverURL,auth);
                 } else {
                     System.out.print("Error: user already exists\n");
