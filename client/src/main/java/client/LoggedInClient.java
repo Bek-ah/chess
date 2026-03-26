@@ -54,14 +54,15 @@ public class LoggedInClient {
                     scanner.nextLine();
                     System.out.print("Select <BLACK> or <WHITE>: ");
                     String playerColor = scanner.nextLine().toUpperCase();
-                    if (playerColor.equals("BLACK")) {
-                        serv.joinGame(playerColor, gameID, auth);
-                        new DrawBoard().DrawBoard(true, new ChessGame());
-                    } else if (playerColor.equals("WHITE")) {
-                        serv.joinGame(playerColor, gameID, auth);
-                        new DrawBoard().DrawBoard(false, new ChessGame());
-                    } else {
-                        System.out.println("Please type black or white");
+                    switch(playerColor) {
+                        case "BLACK":
+                            serv.joinGame(playerColor, gameID, auth);
+                            new DrawBoard(true, new ChessGame());
+                        case "WHITE":
+                            serv.joinGame(playerColor, gameID, auth);
+                            new DrawBoard(false, new ChessGame());
+                        default:
+                            System.out.println("Please type black or white");
                     }
                 } else {
                     System.out.println("Error: Game ID must be a number");
@@ -70,7 +71,7 @@ public class LoggedInClient {
                 System.out.print("Game ID: ");
                 Integer id = scanner.nextInt();
                 serv.getGames(auth, id);
-                DrawBoard.DrawBoard(false, serv.getGames(auth, id).getGame());
+                new DrawBoard(false, serv.getGames(auth, id).getGame());
             } else if (!command.equals("quit")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
             }

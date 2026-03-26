@@ -17,12 +17,9 @@ public class DrawBoard {
         private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
         private static final int LINE_WIDTH_IN_PADDED_CHARS = 0;
         public static boolean blackView = false;
-        /*public static void main(String[] args){
-            ChessGame game = new ChessGame();
-            DrawBoard(true, game);
-        }*/
-        public static void DrawBoard(boolean blackPlayer, ChessGame game) {
-            if (blackPlayer == true){
+
+        public DrawBoard(boolean blackPlayer, ChessGame game) {
+            if (blackPlayer){
                 blackView = true;
             }
             var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);

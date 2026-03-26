@@ -54,10 +54,6 @@ public class ServerFacade {
         }
         return 401;
     }
-    public void deleteAll() throws AccessDeniedException {
-        var request = buildRequest("DELETE", "/db", null, null);
-        sendRequest(request);
-    }
     public Auth register(String username, String password, String email) {
         try {
             User registerUser = new User(username, password, email);
@@ -167,16 +163,6 @@ public class ServerFacade {
         } catch (Exception ex){
             throw new AccessDeniedException("HttpResponse failed");
         }
-    }
-    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws HttpTimeoutException{
-        var status = response.statusCode();
-        if (!isSuccessful(status)){
-            var body = response.body();
-            if (body != null){
-                throw new HttpTimeoutException("unable to handle response");
-            }
-        }
-        return null;
     }
     public boolean isSuccessful(int status){ return status / 100 == 2; }
 }
