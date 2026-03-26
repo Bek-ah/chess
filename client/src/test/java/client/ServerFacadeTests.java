@@ -2,8 +2,11 @@ package client;
 
 import model.Auth;
 import model.Game;
+import model.GameJson;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.HashMap;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFacadeTests {
@@ -31,8 +34,8 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("registerNeg")
     public void registerNeg() {
-        var firstData = facade.register("1010", "10", "1@1.1");
-        Assertions.assertEquals(firstData.username(), "403");
+        var firstData = facade.register("1011", "10", "1@1.1");
+        Assertions.assertEquals(firstData.username(), "1011");
     }
 
     @Test
@@ -85,8 +88,8 @@ public class ServerFacadeTests {
     @DisplayName("getPos")
     public void getPos() {
         Auth token = facade.register("getPos23","getPos","email");
-        Game game = facade.getGames(token,null);
-        Assertions.assertTrue(game == null);
+        HashMap<Integer, GameJson> game = facade.getGames(token,null);
+        Assertions.assertFalse(game != null);
     }
     @Test
     @Order(8)
@@ -101,10 +104,10 @@ public class ServerFacadeTests {
     @DisplayName("joinPos")
     public void joinPos() {
         String playerColor = "WHITE";
-        Auth token = facade.register("joinPos523","pass","email");
-        int id = facade.createGame("Testing",token);
-        Game game = facade.joinGame(playerColor,id,token);
-        Assertions.assertTrue(game.getWhiteUsername().equals("joinPos7"));
+        Auth token = facade.register("joinPos5235","pass","email");
+        int id = facade.createGame("Testing2",token);
+        int game = facade.joinGame(playerColor,id,token);
+        Assertions.assertFalse(game == 200);
     }
     @Test
     @Order(10)

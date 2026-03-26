@@ -26,11 +26,15 @@ public class LoggedInClient {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200) {
                 new DrawBoard(true, new ChessGame());
+            } else {
+                System.out.println("player taken");
             }
         } else if (playerColor.equals("WHITE")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200){
                 new DrawBoard(false, new ChessGame());
+            } else {
+                System.out.println("player taken");
             }
         } else {
             System.out.println("Please type black or white");
