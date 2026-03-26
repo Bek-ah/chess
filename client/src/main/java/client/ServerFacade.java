@@ -1,9 +1,7 @@
 package client;
 
 import com.google.gson.*;
-import model.Auth;
-import model.Game;
-import model.User;
+import model.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,30 +10,33 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+    private int index;
 
     public ServerFacade(String url){
         serverUrl = url;
     }
 
-    public Game joinGame(String playerColor, Integer gameID, Auth auth) {
-        try {
-            Game game = getGames(auth, gameID);
-            Game joinGame = new Game(gameID, game.getName());
-            var request = buildRequest("PUT", "/game", joinGame, auth.authToken());
+    public int joinGame(String playerColor, Integer gameID, Auth auth) {
+        try {//change Game to GameJson more
+            HashMap<Integer, GameJson> gameList = getGames(auth, gameID);
+            GameJson gameToJoin = gameList.get(gameID);
+            JoinGameInput body = new JoinGameInput(playerColor,gameToJoin.getGameID());
+            var request = buildRequest("PUT", "/game", body, auth.authToken());
             Gson gson = new Gson();
             var response = sendRequest(request);
-            JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
-            Game joinedGame = gson.fromJson(games,Game.class);
-            return joinedGame;
+            //JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
+            //Game joinedGame = gson.fromJson(games,Game.class);
+            return response.statusCode();
         } catch (AccessDeniedException e){
             System.out.println("Error: unauthorized");
         }
-        return null;
+        return 0;
     }
     public int createGame(String gameName, Auth auth) {
         try {
@@ -75,33 +76,38 @@ public class ServerFacade {
         }
         return null;
     }
-    public Game getGames(Auth auth, Integer getGameId) {
+    public HashMap<Integer, GameJson> getGames(Auth auth, Integer getGameId) {
         try {
             var request = buildRequest("GET", "/game", null, auth.authToken());
             var response = sendRequest(request);
-            ArrayList<Game> gameList;
+            HashMap<Integer, GameJson> gameList = new HashMap<>();
             if (response.statusCode() != 200) {
                 System.out.println("Error: Unauthorized");
                 return null;
             } else {
                 JsonObject games = JsonParser.parseString(response.body()).getAsJsonObject();
                 JsonArray gameList1 = games.getAsJsonArray("games");
-                System.out.println("Game ID:   Game Name:");
+                index = 0;
                 for (JsonElement game : gameList1) {
+                    index += 1;
+                    Gson gson = new Gson();
                     JsonObject g = game.getAsJsonObject();
+                    GameJson gameElement = gson.fromJson(g, GameJson.class);
+                    gameList.put(index, gameElement);
                     int id = g.get("gameID").getAsInt();
                     String gn = g.get("gameName").getAsString();
-                    if (getGameId == null) {
-                        System.out.println(id + ": " + gn);
-                    } else if (getGameId == id) {
-                        Gson gson = new Gson();
+                    if (getGameId == null){
+                        continue;
+                    }
+                    if (getGameId == id) {
+                        Gson gson2 = new Gson();
                         JsonElement gameRet1 = g.get("game");
                         //String gameRet2 = gameRet1.getAsString();
-                        Game gameRet = gson.fromJson(gameRet1, Game.class);
-                        System.out.println(id + ": " + gn);
-                        return gameRet;
+                        Game gameRet = gson2.fromJson(gameRet1, Game.class);
+                        return gameList;
                     }
                 }
+                return gameList;
             }
         } catch (AccessDeniedException e) {
             System.out.println("Error: Access Denied");

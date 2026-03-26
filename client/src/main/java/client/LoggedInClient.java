@@ -2,13 +2,15 @@ package client;
 
 import chess.ChessGame;
 import model.Auth;
+import model.Game;
+import model.GameJson;
 import ui.DrawBoard;
 
 import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
 
 public class LoggedInClient {
     private static String helpMessage = "Options (not case sensative):\n" +
@@ -20,15 +22,18 @@ public class LoggedInClient {
             "Help remembering commands: 'help'\n";
 
     public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
-        switch (playerColor) {
-            case "BLACK":
-                serv.joinGame(playerColor, gamePlayID, auth);
+        if(playerColor.equals("BLACK")) {
+            int response = serv.joinGame(playerColor, gamePlayID, auth);
+            if (response == 200) {
                 new DrawBoard(true, new ChessGame());
-            case "WHITE":
-                serv.joinGame(playerColor, gamePlayID, auth);
+            }
+        } else if (playerColor.equals("WHITE")) {
+            int response = serv.joinGame(playerColor, gamePlayID, auth);
+            if (response == 200){
                 new DrawBoard(false, new ChessGame());
-            default:
-                System.out.println("Please type black or white");
+            }
+        } else {
+            System.out.println("Please type black or white");
         }
     }
 
@@ -41,16 +46,15 @@ public class LoggedInClient {
             System.out.print(loggedInPrompt);
             String line = scanner.nextLine();
             command = line.toLowerCase();
-            switch (command) {
-                case "help":
+                if(command.equals("help")) {
                     System.out.print(helpMessage);
-                case "logout":
+                } else if (command.equals("logout")) {
                     if (serv.logout(auth) == 200) {
                         break;
                     } else {
                         System.out.println("Error: Already logged out");
                     }
-                case "create":
+                } else if (command.equals("create")) {
                     System.out.print("Game name: ");
                     String gameName = scanner.nextLine();
                     int gameID = serv.createGame(gameName, auth);
@@ -58,9 +62,23 @@ public class LoggedInClient {
                         System.out.print("Error: unable to make new game\n");
                         System.out.print(gameID);
                     }
-                case "list":
-                    serv.getGames(auth, null);
-                case "play":
+                } else if (command.equals("list")) {
+                    HashMap<Integer, GameJson> gamesList = serv.getGames(auth, null);
+                    System.out.println("index | gameID | gameName | whiteUsername | blackUsername");
+                    for (int index = 1; index <= gamesList.size(); index++){
+                        int gameID = gamesList.get(index).getGameID();
+                        String gameName = gamesList.get(index).getGameName();
+                        String whiteUsername = "No user";
+                        String blackUsername = "No user";
+                        if (gamesList.get(index).getWhiteUsername()!=null) {
+                            whiteUsername = gamesList.get(index).getWhiteUsername();
+                        }
+                        if (gamesList.get(index).getBlackUsername()!=null) {
+                            blackUsername = gamesList.get(index).getBlackUsername();
+                        }
+                        System.out.println(index + " | " + gameID + " | " + gameName + " | " + whiteUsername + " | " + blackUsername);
+                    }
+                } else if (command.equals("play")) {
                     System.out.print("Please enter the gameID: ");
                     Integer gamePlayID;
                     if (scanner.hasNextInt()) {
@@ -68,18 +86,17 @@ public class LoggedInClient {
                         scanner.nextLine();
                         System.out.print("Select <BLACK> or <WHITE>: ");
                         String playerColor = scanner.nextLine().toUpperCase();
-                        joining(playerColor,gamePlayID,auth,serv);
+                        joining(playerColor, gamePlayID, auth, serv);
                     } else {
                         System.out.println("Error: Game ID must be a number");
                     }
-                case "observe":
+                } else if (command.equals("observe")) {
                     System.out.print("Game ID: ");
                     Integer id = scanner.nextInt();
                     serv.getGames(auth, id);
-                    new DrawBoard(false, serv.getGames(auth, id).getGame());
-                default:
-                    System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
-            }
+                    new DrawBoard(false, serv.getGames(auth, null).get(id).getGame());
+                } else {
+                    System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");}
         }
     }
 }

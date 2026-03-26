@@ -31,7 +31,7 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("registerNeg")
     public void registerNeg() {
-        var firstData = facade.register("1000", "10", "1@1.1");
+        var firstData = facade.register("1010", "10", "1@1.1");
         Assertions.assertEquals(firstData.username(), "403");
     }
 
@@ -39,7 +39,7 @@ public class ServerFacadeTests {
     @Order(2)
     @DisplayName("registerPos")
     public void registerPos() {
-        Auth authData = facade.register("NewName5", "10", "1@1.1");
+        Auth authData = facade.register("NewName23", "10", "1@1.1");
         Assertions.assertFalse(authData.authToken().isEmpty());
     }
 
@@ -48,7 +48,7 @@ public class ServerFacadeTests {
     @DisplayName("logoutPos")
     public void logoutPos() {
         Auth authToken;
-        authToken = facade.register("test","1","1@1.1");
+        authToken = facade.register("test23","1","1@1.1");
         var status = facade.logout(authToken);
         Assertions.assertTrue(status == 200);
     }
@@ -57,7 +57,7 @@ public class ServerFacadeTests {
     @Order(4)
     @DisplayName("logoutNeg")
     public void logoutNeg() {
-        facade.register("53","1","1@1.1");
+        facade.register("5323","1","1@1.1");
         var authData = facade.logout(new Auth("Bad auth", "000000"));
         Assertions.assertFalse(authData == 200);
     }
@@ -66,25 +66,25 @@ public class ServerFacadeTests {
     @Order(5)
     @DisplayName("loginPos")
     public void loginPos() {
-        Auth token = facade.register("loginPos","loginPos","loginPos");
+        Auth token = facade.register("loginPos23","loginPos","loginPos");
         facade.logout(token);
-        Auth authData = facade.login("loginPos", "loginPos");
+        Auth authData = facade.login("loginPos23", "loginPos");
         Assertions.assertFalse(authData.authToken().isEmpty());
     }
     @Test
     @Order(6)
     @DisplayName("loginNeg")
     public void loginNeg() {
-        Auth token = facade.register("loginNeg","loginNeg","loginNeg");
+        Auth token = facade.register("loginNeg23","loginNeg","loginNeg");
         facade.logout(token);
-        Auth authData = facade.login("loginNeg", "4");
+        Auth authData = facade.login("loginNeg23", "4");
         Assertions.assertTrue(authData.authToken().isEmpty());
     }
     @Test
     @Order(7)
     @DisplayName("getPos")
     public void getPos() {
-        Auth token = facade.register("getPos","getPos","email");
+        Auth token = facade.register("getPos23","getPos","email");
         Game game = facade.getGames(token,null);
         Assertions.assertTrue(game == null);
     }
@@ -92,8 +92,8 @@ public class ServerFacadeTests {
     @Order(8)
     @DisplayName("getNeg")
     public void getNeg() {
-        Auth token = new Auth("getNeg", "");
-        facade.register("getNeg","getPos","email");
+        Auth token = new Auth("getNeg23", "");
+        facade.register("getNeg23","getPos","email");
         var nothing = facade.getGames(token,654);
         Assertions.assertTrue(nothing == null);
     }    @Test
@@ -101,7 +101,7 @@ public class ServerFacadeTests {
     @DisplayName("joinPos")
     public void joinPos() {
         String playerColor = "WHITE";
-        Auth token = facade.register("joinPos5","pass","email");
+        Auth token = facade.register("joinPos523","pass","email");
         int id = facade.createGame("Testing",token);
         Game game = facade.joinGame(playerColor,id,token);
         Assertions.assertTrue(game.getWhiteUsername().equals("joinPos7"));
@@ -112,7 +112,7 @@ public class ServerFacadeTests {
     public void joinNeg() {
         //Game game = facade.joinGame("<WHITE>",id,token);
         //Assertions.assertFalse(false);
-        var authData = facade.register("joinNeg87", "1","1");
+        var authData = facade.register("joinNeg8723", "1","1");
         int ret = facade.createGame("Testing",authData);
         var ret2 = facade.joinGame("WHITE",ret,authData);
         Assertions.assertTrue(true);
@@ -121,7 +121,7 @@ public class ServerFacadeTests {
     @Order(11)
     @DisplayName("createPos")
     public void createPos() {
-        var authData = facade.register("createPos10", "1","1");
+        var authData = facade.register("createPos1230", "1","1");
         int ret = facade.createGame("Testing",authData);
         Assertions.assertTrue(ret!=401);
     }
@@ -129,7 +129,7 @@ public class ServerFacadeTests {
     @Order(12)
     @DisplayName("createNeg")
     public void createNeg() {
-        Auth authData = facade.register("createNeg15", "1","1");
+        Auth authData = facade.register("createNeg1235", "1","1");
         int ret = facade.createGame("",authData);
         Assertions.assertEquals(401, ret);
     }

@@ -17,11 +17,7 @@ public class ChessBoard {
         return (subject.myCol <= 8) && (subject.myRow <= 8) && (subject.myCol >= 0) && (subject.myRow >= 0);
     }
 
-    public ChessBoard() {
-        //dictionary with a ChessPosition, ChessPiece(ChessTeam,ChessType)
-        //array, 8x8 64 values harder math
-        //maybe 2 arrays of 8 values?
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard

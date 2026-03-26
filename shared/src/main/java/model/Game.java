@@ -3,11 +3,11 @@ package model;
 import chess.ChessGame;import java.util.Objects;
 
 public class Game {
-    private final Integer gameID;
+    private Integer gameID;
     private String whiteUsername;
     private String blackUsername;
     private String gameName;
-    private final ChessGame game;
+    private ChessGame game;
 
     public Game(Integer gID, String gn){
         this.gameID = gID;
