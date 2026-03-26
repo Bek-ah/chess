@@ -9,7 +9,6 @@ import ui.DrawBoard;
 import java.net.http.HttpTimeoutException;
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class LoggedInClient {
@@ -20,6 +19,13 @@ public class LoggedInClient {
             "Play a Game: 'play' <GAME ID>\n" +
             "Observe a Game: 'observe' <GAME ID>\n" +
             "Help remembering commands: 'help'\n";
+    public String setW(String test){
+        if (test != null){
+            return test;
+        }
+        return "No user";
+    }
+
 
     public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
         if(playerColor.equals("BLACK")) {
@@ -74,12 +80,8 @@ public class LoggedInClient {
                         String gameName = gamesList.get(index).getGameName();
                         String whiteUsername = "No user";
                         String blackUsername = "No user";
-                        if (gamesList.get(index).getWhiteUsername()!=null) {
-                            whiteUsername = gamesList.get(index).getWhiteUsername();
-                        }
-                        if (gamesList.get(index).getBlackUsername()!=null) {
-                            blackUsername = gamesList.get(index).getBlackUsername();
-                        }
+                        whiteUsername = setW(gamesList.get(index).getWhiteUsername());
+                        blackUsername = setW(gamesList.get(index).getBlackUsername());
                         System.out.println(index + " | " + gameID + " | " + gameName + " | " + whiteUsername + " | " + blackUsername);
                     }
                 } else if (command.equals("play")) {
