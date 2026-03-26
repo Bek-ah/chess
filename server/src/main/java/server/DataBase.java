@@ -33,15 +33,6 @@ public class DataBase {
         }
         return null;
     }
-    public Game getGamebyGameName(String gameName) {
-        for (Game game : gameTable.values()){
-            if(game.getName().equals(gameName)){
-                return game;
-            }
-        }
-        System.out.println("No Game found");
-        return null;
-    }
     public Game getGamebyGameID(int id){
         return gameTable.get(id);
     }

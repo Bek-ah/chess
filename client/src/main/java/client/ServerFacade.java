@@ -59,16 +59,17 @@ public class ServerFacade {
             User registerUser = new User(username, password, email);
             var request = buildRequest("POST", "/user", registerUser, null);
             var response = sendRequest(request);
-            Auth returnAuth;
+            Auth returnRegAuth;
             if (response.statusCode() != 200) {
                 String errorCode = "" + response.statusCode();
-                returnAuth = new Auth(errorCode, "");
+                returnRegAuth = new Auth(errorCode, "");
             } else {
-                JsonObject auth1 = JsonParser.parseString(response.body()).getAsJsonObject();
-                String auth2 = auth1.get("authToken").getAsString();
-                returnAuth = new Auth(username, auth2);
+                JsonObject authReg = JsonParser.parseString(response.body()).getAsJsonObject();
+                String authReg2 = authReg.get("authToken").getAsString();
+
+                returnRegAuth = new Auth(username, authReg2);
             }
-            return returnAuth;
+            return returnRegAuth;
         } catch (AccessDeniedException e) {
             System.out.println("Error: Access denied");
         }
