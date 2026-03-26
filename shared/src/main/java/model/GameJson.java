@@ -26,7 +26,9 @@ public class GameJson {
             return false;
         }
         GameJson gameJson = (GameJson) o;
-        return Objects.equals(gameID, gameJson.gameID) && Objects.equals(whiteUsername, gameJson.whiteUsername) && Objects.equals(blackUsername, gameJson.blackUsername) && Objects.equals(gameName, gameJson.gameName) && Objects.equals(game, gameJson.game);
+        return Objects.equals(gameID, gameJson.gameID) && Objects.equals(whiteUsername,
+                gameJson.whiteUsername) && Objects.equals(blackUsername, gameJson.blackUsername) &&
+                Objects.equals(gameName, gameJson.gameName) && Objects.equals(game, gameJson.game);
     }
 
     @Override
