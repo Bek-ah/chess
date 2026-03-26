@@ -112,9 +112,9 @@ public class ServerFacadeTests {
     public void joinNeg() {
         //Game game = facade.joinGame("<WHITE>",id,token);
         //Assertions.assertFalse(false);
-        var authData = facade.register("joinNeg86", "1","1");
+        var authData = facade.register("joinNeg87", "1","1");
         int ret = facade.createGame("Testing",authData);
-        facade.joinGame("WHITE",ret,authData);
+        var ret2 = facade.joinGame("WHITE",ret,authData);
         Assertions.assertTrue(true);
     }
     @Test

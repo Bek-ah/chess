@@ -19,6 +19,19 @@ public class LoggedInClient {
             "Observe a Game: 'observe' <GAME ID>\n" +
             "Help remembering commands: 'help'\n";
 
+    public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
+        switch (playerColor) {
+            case "BLACK":
+                serv.joinGame(playerColor, gamePlayID, auth);
+                new DrawBoard(true, new ChessGame());
+            case "WHITE":
+                serv.joinGame(playerColor, gamePlayID, auth);
+                new DrawBoard(false, new ChessGame());
+            default:
+                System.out.println("Please type black or white");
+        }
+    }
+
     public LoggedInClient(String serverURL, Auth auth) throws AccessDeniedException, HttpTimeoutException {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
@@ -55,16 +68,7 @@ public class LoggedInClient {
                         scanner.nextLine();
                         System.out.print("Select <BLACK> or <WHITE>: ");
                         String playerColor = scanner.nextLine().toUpperCase();
-                        switch (playerColor) {
-                            case "BLACK":
-                                serv.joinGame(playerColor, gamePlayID, auth);
-                                new DrawBoard(true, new ChessGame());
-                            case "WHITE":
-                                serv.joinGame(playerColor, gamePlayID, auth);
-                                new DrawBoard(false, new ChessGame());
-                            default:
-                                System.out.println("Please type black or white");
-                        }
+                        joining(playerColor,gamePlayID,auth,serv);
                     } else {
                         System.out.println("Error: Game ID must be a number");
                     }
