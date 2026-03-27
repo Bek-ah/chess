@@ -18,7 +18,11 @@ public class DrawBoard {
         private static final int LINE_WIDTH_IN_PADDED_CHARS = 0;
         public static boolean blackView = false;
 
-        public DrawBoard(boolean blackPlayer, ChessGame game) {
+    public static void main(String[] args) {
+        new DrawBoard(true, new ChessGame());
+    }
+
+    public DrawBoard(boolean blackPlayer, ChessGame game) {
             if (blackPlayer){
                 blackView = true;
             }
@@ -130,14 +134,13 @@ public class DrawBoard {
                         int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
 
                         out.print(EMPTY.repeat(prefixLength));
-                        int blackBoard = blackView ? 1 : 0;
-                        if (((boardCol+row+blackBoard)%2)==1){
+                        if (((boardCol+row)%2)==1){
                             out.print(SET_BG_COLOR_LIGHT_GREY);
                         } else {
                             out.print(SET_BG_COLOR_DARK_GREY);
                         }
                         if (blackView == true){
-                            printPlayer(out, pieceText(out, game, new ChessPosition(row, boardCol+1)));
+                            printPlayer(out, pieceText(out, game, new ChessPosition(row, 8-boardCol)));
                         } else {
                             printPlayer(out, pieceText(out, game, new ChessPosition(9-row, boardCol+1)));
                         }

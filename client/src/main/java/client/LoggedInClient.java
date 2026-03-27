@@ -27,12 +27,13 @@ public class LoggedInClient {
     }
 
 
+
     public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
         if(playerColor.equals("BLACK")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200) {
                 new DrawBoard(true, new ChessGame());
-            } else {
+            } else if (response != 30) {
                 System.out.println("player taken");
             }
         } else if (playerColor.equals("WHITE")) {
@@ -40,13 +41,41 @@ public class LoggedInClient {
             if (response == 200){
                 new DrawBoard(false, new ChessGame());
             } else {
-                System.out.println("player taken");
+                System.out.println("Color not available");
             }
         } else {
             System.out.println("Please type black or white");
         }
     }
 
+    public int observing(Scanner scanner, ServerFacade serv, Auth auth){
+        try {
+            System.out.print("Game Number: ");
+            int id = 0;
+            if (scanner.hasNextInt()) {
+                id = scanner.nextInt();
+            } else {
+                System.out.println("Error: please enter the game number");
+                return 300;
+            }
+            if (id < 1){
+                System.out.println("Error: please enter the game number");
+                return 301;
+            }
+
+            HashMap<Integer, GameJson> list = serv.getGames(auth, id);
+            //new DrawBoard(false, serv.getGames(auth, null).get(id).getGame());
+            if (list.size() < id) {
+                System.out.println("Error: please enter the correct game number");
+                return 302;
+            }
+            new DrawBoard(false, new ChessGame());
+            return 0;
+        } catch (NullPointerException n) {
+            System.out.println("Please enter a valid game number");
+            return 300;
+        }
+    }
     public LoggedInClient(String serverURL, Auth auth) throws AccessDeniedException, HttpTimeoutException {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
@@ -82,7 +111,7 @@ public class LoggedInClient {
                         String blackUsername = "No user";
                         whiteUsername = setW(gamesList.get(index).getWhiteUsername());
                         blackUsername = setW(gamesList.get(index).getBlackUsername());
-                        System.out.println(index + " | " + gameID + " | " + gameName + " | " + whiteUsername + " | " + blackUsername);
+                        System.out.println(index + " | " + gameName + " | " + whiteUsername + " | " + blackUsername);
                     }
                 } else if (command.equals("play")) {
                     System.out.print("Please enter the gameID: ");
@@ -97,10 +126,7 @@ public class LoggedInClient {
                         System.out.println("Error: Game ID must be a number");
                     }
                 } else if (command.equals("observe")) {
-                    System.out.print("Game ID: ");
-                    Integer id = scanner.nextInt();
-                    serv.getGames(auth, id);
-                    new DrawBoard(false, serv.getGames(auth, null).get(id).getGame());
+                    observing(scanner,serv,auth);
                 } else {
                     System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");}
         }

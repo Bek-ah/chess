@@ -35,6 +35,9 @@ public class ServerFacade {
             return response.statusCode();
         } catch (AccessDeniedException e){
             System.out.println("Error: unauthorized");
+        } catch (NullPointerException n){
+            System.out.println("Error: game not found");
+            return 30;
         }
         return 0;
     }
@@ -76,7 +79,7 @@ public class ServerFacade {
         }
         return null;
     }
-    public HashMap<Integer, GameJson> getGames(Auth auth, Integer getGameId) {
+    public HashMap<Integer, GameJson> getGames(Auth auth, Integer getGameId) throws NullPointerException {
         try {
             var request = buildRequest("GET", "/game", null, auth.authToken());
             var response = sendRequest(request);
