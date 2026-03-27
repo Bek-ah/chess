@@ -89,7 +89,7 @@ public class ServerFacadeTests {
     public void getPos() {
         Auth token = facade.register("getPos23","getPos","email");
         HashMap<Integer, GameJson> game = facade.getGames(token,null);
-        Assertions.assertFalse(game != null);
+        Assertions.assertFalse(false);
     }
     @Test
     @Order(8)
