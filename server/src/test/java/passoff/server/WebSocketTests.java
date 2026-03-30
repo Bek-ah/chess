@@ -38,7 +38,7 @@ public class WebSocketTests {
 
         serverFacade = new TestServerFacade("localhost", port);
         serverFacade.clear();
-        environment = new WebsocketTestingEnvironment("localhost", port, "/ws", TestFactory.getGsonBuilder());
+        environment = new WebsocketTestingEnvironment("localhost", port, "/ws", passoff.server.TestFactory.getGsonBuilder());
         waitTime = TestFactory.getMessageTime();
     }
 
