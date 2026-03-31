@@ -32,13 +32,15 @@ public class LoggedInClient {
         if(playerColor.equals("BLACK")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200) {
+                new PlayingClient(playerColor, gamePlayID, auth, serv);
                 new DrawBoard(true, new ChessGame());
             } else if (response != 30) {
-                System.out.println("player taken");
+                System.out.println("player taken"); //why else if (response !=30) for black and just else for white? possible bug
             }
         } else if (playerColor.equals("WHITE")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200){
+                new PlayingClient(playerColor, gamePlayID, auth, serv);
                 new DrawBoard(false, new ChessGame());
             } else {
                 System.out.println("Color not available");
@@ -69,6 +71,7 @@ public class LoggedInClient {
                 System.out.println("Error: please enter the correct game number");
                 return 302;
             }
+            new ObservingClient(id, auth, serv);
             new DrawBoard(false, new ChessGame());
             return 0;
         } catch (NullPointerException n) {
@@ -127,7 +130,7 @@ public class LoggedInClient {
                     }
                 } else if (command.equals("observe")) {
                     observing(scanner,serv,auth);
-                } else {
+                } else if (!command.equals("quit")) {
                     System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");}
         }
     }
