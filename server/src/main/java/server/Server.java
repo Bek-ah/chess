@@ -12,6 +12,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
+import server.websocket.WebSocketHandler;
 import service.ChessService;
 
 import java.nio.file.AccessDeniedException;
@@ -27,6 +28,7 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        server.websocket.WebSocketHandler webSocketHandler = new WebSocketHandler();
 
         // Register your endpoints and exception handlers here.
         javalin.delete("/db", this::deleteAllGames);
@@ -36,6 +38,11 @@ public class Server {
         javalin.delete("/session", this::logout);
         javalin.post("/game", this::createGame);
         javalin.put("/game", this::joinGame);
+        javalin.ws("/ws", ws ->{
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
     }
     public int run(int desiredPort) {
         javalin.start(desiredPort);

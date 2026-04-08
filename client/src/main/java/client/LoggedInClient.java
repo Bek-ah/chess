@@ -1,17 +1,18 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.LoadGameMessage;
+import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import model.Auth;
 import model.GameJson;
 import ui.DrawBoard;
 
-import java.net.http.HttpTimeoutException;
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class LoggedInClient {
+    private final WebSocketFacade ws;
     private static String helpMessage = "Options (not case sensative):\n" +
             "Logout: 'logout'\n" +
             "Create a new Game: 'create' <GAME NAME>\n" +
@@ -25,14 +26,11 @@ public class LoggedInClient {
         }
         return "No user";
     }
-
-
-
     public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
         if(playerColor.equals("BLACK")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200) {
-                new PlayingClient(playerColor, gamePlayID, auth, serv);
+                new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
                 new DrawBoard(true, new ChessGame());
             } else if (response != 30) {
                 System.out.println("player taken"); //why else if (response !=30) for black and just else for white? possible bug
@@ -40,7 +38,9 @@ public class LoggedInClient {
         } else if (playerColor.equals("WHITE")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200){
-                new PlayingClient(playerColor, gamePlayID, auth, serv);
+                System.out.println("response 200: Attempting ws connection:");
+                ws.connect(auth.toString(),gamePlayID);
+                new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
                 new DrawBoard(false, new ChessGame());
             } else {
                 System.out.println("Color not available");
@@ -49,7 +49,6 @@ public class LoggedInClient {
             System.out.println("Please type black or white");
         }
     }
-
     public int observing(Scanner scanner, ServerFacade serv, Auth auth){
         try {
             System.out.print("Game Number: ");
@@ -79,12 +78,14 @@ public class LoggedInClient {
             return 300;
         }
     }
-    public LoggedInClient(String serverURL, Auth auth) throws Exception {
+
+    public LoggedInClient(String serverURL, Auth auth) {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
         var command = "";
         ServerFacade serv = new ServerFacade(serverURL);
-        WebSocketFacade web = new WebSocketFacade(serverURL, auth);
+        NotificationHandler notify = new LoadGameMessage();
+        ws = new WebSocketFacade(serverURL, auth, notify);
         while (!command.equals("quit")) {
             System.out.print(loggedInPrompt);
             String line = scanner.nextLine();

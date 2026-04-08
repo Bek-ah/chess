@@ -29,8 +29,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (action.getCommandType()) {
-                case LEAVE -> enter(action.getGameID().toString(), ctx.session);
-                case RESIGN -> exit(action.getGameID().toString(), ctx.session);
+                case MAKE_MOVE -> move(action.getGameID().toString(), ctx.session);
+                case CONNECT -> connect(action.getGameID().toString(), ctx.session);
+                case LEAVE -> exit(action.getGameID().toString(), ctx.session);
+                case RESIGN -> resign(action.getGameID().toString(), ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -42,27 +44,36 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
+    private void move(String visitorName, Session session) throws IOException {
         connections.add(session);
         var message = String.format("%s is in the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         connections.broadcast(session, notification);
     }
-
+    private void connect(String visitorName, Session session) throws IOException {
+        connections.add(session);
+        var message = String.format("%s has joined the game", visitorName);
+        System.out.println(message);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.broadcast(null, notification);
+    }
     private void exit(String visitorName, Session session) throws IOException {
-        var message = String.format("%s left the shop", visitorName);
+        var message = String.format("%s left the game", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         connections.broadcast(session, notification);
         connections.remove(session);
     }
-
-    public void error(String petName, String sound) throws IOException {
+    private void resign(String visitorName, Session session) throws IOException {
+        var message = String.format("%s resigned", visitorName);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        connections.broadcast(session, notification);
+    }
+    public void error() throws IOException {
         try {
-            var message = String.format("%s says %s", petName, sound);
             var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             connections.broadcast(null, notification);
         } catch (IOException ex) {
-            throw new IOException("Message");
+            throw new IOException("Error: throwing error");
         }
     }
 }

@@ -13,7 +13,7 @@ public class LoggedOutClient {
             "Exit chess program: 'quit'\n" +
             "Help remembering commands: 'help'\n";
 
-    public LoggedOutClient(String serverURL) throws AccessDeniedException, HttpTimeoutException {
+    public LoggedOutClient(String serverURL) {
         System.out.println("♕ 240 Chess Type 'help' to get started ♕");
         System.out.print(helpMessage);
         Scanner scanner = new Scanner(System.in);

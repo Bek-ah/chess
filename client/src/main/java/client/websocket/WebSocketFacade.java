@@ -14,7 +14,7 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
-    public WebSocketFacade(String url, Auth auth) throws Exception {
+    public WebSocketFacade(String url, Auth auth, NotificationHandler notificationHandler) {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -31,8 +31,8 @@ public class WebSocketFacade extends Endpoint {
                     notificationHandler.notify(notification);
                 }
             });
-        } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new Exception("problem with facade");
+        } catch (Exception ex) {
+            System.out.println("problem with facade");
         }
     }
 
@@ -41,37 +41,47 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void movePiece(String auth, Integer gameID) throws Exception {
+    public void movePiece(String auth, Integer gameID) {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new Exception("problem with moving piece");
+            System.out.println("problem with moving piece");
         }
     }
 
-    public void connect(String auth, Integer gameID) throws Exception {
+    public void connect(String auth, Integer gameID) {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new Exception("problem with connect");
+            System.out.println("problem with connection");
         }
     }
-    public void leave(String auth, Integer gameID) throws Exception {
+    public void login(String auth, Integer gameID) {
+        try {
+            System.out.println("Trying login ws facade");
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameID);
+            System.out.println("madeMessage");
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            System.out.println("problem with login ws facade");
+        }
+    }
+    public void leave(String auth, Integer gameID) {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new Exception("problem with leave");
+            System.out.println("problem with leave");
         }
     }
-    public void resign(String auth, Integer gameID) throws Exception {
+    public void resign(String auth, Integer gameID) {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new Exception("problem with resign");
+            System.out.println("problem with resign");
         }
     }
 

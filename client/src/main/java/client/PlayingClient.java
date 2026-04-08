@@ -1,8 +1,10 @@
 package client;
 
+import client.websocket.WebSocketFacade;
 import model.Auth;
 
 import java.net.http.HttpTimeoutException;
+import java.net.http.WebSocket;
 import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
 
@@ -16,8 +18,9 @@ public class PlayingClient {
             "Highlight Legal Moves: 'highlight' <position>\n" +
             "Help remembering commands: 'help'\n";
 
-    public PlayingClient(String playerColor, int gamePlayID, Auth auth, ServerFacade serv) {
+    public PlayingClient(String playerColor, int gamePlayID, Auth auth, ServerFacade serv, WebSocketFacade ws) {
         System.out.print(helpMessage);
+        ws.connect(auth.toString(),gamePlayID);
         Scanner scanner = new Scanner(System.in);
         String playingPrompt = "GAME >>";//Change GAME to be the game name?
         var command = "";
