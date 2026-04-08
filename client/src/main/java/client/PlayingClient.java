@@ -13,6 +13,7 @@ public class PlayingClient {
             "Resign: 'resign'\n" +
             "Make a move: 'move' <starting position> <end position> (example of position: A1)\n" +
             "Leave game: 'leave'\n" +
+            "Highlight Legal Moves: 'highlight' <position>\n" +
             "Help remembering commands: 'help'\n";
 
     public PlayingClient(String playerColor, int gamePlayID, Auth auth, ServerFacade serv) {
@@ -30,7 +31,9 @@ public class PlayingClient {
                 System.out.println("resign stub");
             } else if (command.equals("redraw")){
                 System.out.println("redraw stub");
-            }  else if (command.equals("move")){
+            } else if (command.equals("highlight")){
+                System.out.println("highlight stub");
+            } else if (command.equals("move")){
                 System.out.print("move stub");
                 String username = scanner.nextLine();
                 System.out.print("move end: ");

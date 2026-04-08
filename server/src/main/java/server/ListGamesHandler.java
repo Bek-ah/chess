@@ -14,7 +14,6 @@ public class ListGamesHandler {
 
         currentService.getAllMyGames(authToken);
         Collection<Game> gameList = currentService.getAllMyGames(authToken);
-        System.out.println("gameListHandler: "+gameList);
         return gameList;
     }
 }

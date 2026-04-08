@@ -1,8 +1,8 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.WebSocketFacade;
 import model.Auth;
-import model.Game;
 import model.GameJson;
 import ui.DrawBoard;
 
@@ -79,11 +79,12 @@ public class LoggedInClient {
             return 300;
         }
     }
-    public LoggedInClient(String serverURL, Auth auth) throws AccessDeniedException, HttpTimeoutException {
+    public LoggedInClient(String serverURL, Auth auth) throws Exception {
         Scanner scanner = new Scanner(System.in);
         String loggedInPrompt = "LOGGED IN>>";
         var command = "";
         ServerFacade serv = new ServerFacade(serverURL);
+        WebSocketFacade web = new WebSocketFacade(serverURL, auth);
         while (!command.equals("quit")) {
             System.out.print(loggedInPrompt);
             String line = scanner.nextLine();
