@@ -222,6 +222,7 @@ public class ChessGame {
                     }
                 }
             }
+            setTeamTurn(null);
             return true;
         }
         return false;
@@ -238,6 +239,11 @@ public class ChessGame {
             myBoard.addPiece(new ChessPosition(i.getRow(),i.getColumn()),new ChessPiece(board.getPiece(i).getTeamColor(), board.getPiece(i).myType));
         }
     }
+
+    public void resign(){
+        setTeamTurn(null);
+    }
+
 
     /**
      * Gets the current chessboard

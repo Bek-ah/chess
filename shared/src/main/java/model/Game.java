@@ -25,6 +25,9 @@ public class Game {
     boolean boo = Objects.equals(blackUsername, game1.blackUsername) && Objects.equals(gameName, game1.gameName) && Objects.equals(game, game1.game);
     return Objects.equals(gameID, game1.gameID) && Objects.equals(whiteUsername, game1.whiteUsername) && boo;
     }
+    public void setGame(ChessGame newGame){
+        game = newGame;
+    }
     @Override
     public int hashCode() {
         return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);

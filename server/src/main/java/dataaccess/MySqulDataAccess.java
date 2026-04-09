@@ -31,13 +31,13 @@ public class MySqulDataAccess implements DataAccess {
             throw new RuntimeException(e);
         }
     }
-    public void updatePiece(String start, String end, Integer gameID){
-        var statement = "UPDATE gameTable SET ? = ? WHERE `gameID` = ?";
+    public void updateGame(ChessGame game, Integer gameID){
+        var statement = "UPDATE gameTable SET game = ? WHERE `gameID` = ?";
         try (var conn = DatabaseManager.getConnection()) {
+            String json = new Gson().toJson(game);
             try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, start);
-                preparedStatement.setString(2, end);
-                preparedStatement.setInt(3, gameID);
+                preparedStatement.setString(1, json);
+                preparedStatement.setInt(2, gameID);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
@@ -120,6 +120,7 @@ public class MySqulDataAccess implements DataAccess {
         ChessGame game = new Gson().fromJson(tempGame, ChessGame.class);
         return newGame;
     }
+
     private Auth readAuth(ResultSet rs) throws SQLException {
         var token = rs.getString("authToken");
         var userName = rs.getString("username");

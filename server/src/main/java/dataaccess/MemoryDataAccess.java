@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -11,7 +12,7 @@ public class MemoryDataAccess implements DataAccess {
     DataBase myDataBase = new DataBase();
     //CREATE
     public void updatePlayers(String whiteUsername, String blackUsername, Integer gameID){}
-    public void updatePiece(String start, String end, Integer gameID){}
+    public void updateGame(ChessGame game, Integer gameID){}
     public void createUser(User userData){
         myDataBase.createUser(userData);
     }

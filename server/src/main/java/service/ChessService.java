@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import chess.ChessPosition;
 import dataaccess.*;
 import org.opentest4j.AssertionFailedError;
@@ -19,8 +20,18 @@ public class ChessService {
     public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
     }
-    public void movePiece(ChessPosition start, ChessPosition end, DataAccess data, String authToken){
-        ;
+    public void movePiece(Game game, DataAccess data, String authToken){
+        //take in the game and dataaccess info, send to mySqulDataAccess
+        if(!authenticate(authToken)){
+            throw new AssertionError();
+        }
+        System.out.println("authenticated chessservice26: ");
+         dataAccess.getGamebyGameID(game.getID());
+
+        data.updateGame(game.getGame(),game.getID());
+    }
+    public Auth getAuthData(String authToken){
+        return dataAccess.getAuthbyToken(authToken);
     }
     public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
         System.out.println("joinGame22");
