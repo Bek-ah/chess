@@ -23,6 +23,7 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     ChessService service;
@@ -171,6 +172,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.add(session);
         ChessGame game = service.getGamebyGameID(gameID).getGame();
         Game gameData = service.getGamebyGameID(gameID);
+        Auth authData = service.getAuthData(action.getAuthToken());
+        String user = authData.username();
+        boolean isPlayer = Objects.equals(user, gameData.getWhiteUsername()) || Objects.equals(user, gameData.getBlackUsername());
+        if (!isPlayer){
+            error("Error: observer can't resign", session);
+            return;
+        }
         if (game.getTeamTurn()!=null){
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.addMessage("Player resigned. Game over");
