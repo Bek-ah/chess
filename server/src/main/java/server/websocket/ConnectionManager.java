@@ -27,4 +27,15 @@ public class ConnectionManager {
             }
         }
     }
+
+    public void selfBroadcast(Session onlySession, ServerMessage notification) throws IOException {
+        String msg = notification.toString();
+        for (Session c : connections.values()) {
+            if (c.isOpen()) {
+                if (c.equals(onlySession)) {
+                    c.getRemote().sendString(msg);
+                }
+            }
+        }
+    }
 }

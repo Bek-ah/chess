@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.Auth;
 import model.Game;
@@ -30,7 +31,19 @@ public class MySqulDataAccess implements DataAccess {
             throw new RuntimeException(e);
         }
     }
-
+    public void updatePiece(String start, String end, Integer gameID){
+        var statement = "UPDATE gameTable SET ? = ? WHERE `gameID` = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, start);
+                preparedStatement.setString(2, end);
+                preparedStatement.setInt(3, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     //CREATE
     public void createUser(User userData){
         var statement = "INSERT INTO userTable (`username`, `user`) VALUES (?, ?)";

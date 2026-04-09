@@ -1,4 +1,5 @@
 package client.websocket;
+import client.ServerFacade;
 import model.Auth;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
@@ -13,9 +14,11 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    String httpUrl;
 
     public WebSocketFacade(String url, Auth auth, NotificationHandler notificationHandler) {
         try {
+            httpUrl = url;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
             this.notificationHandler = notificationHandler;

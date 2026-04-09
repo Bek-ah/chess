@@ -1,6 +1,7 @@
 package service;
 
-import dataaccess.DataAccess;
+import chess.ChessPosition;
+import dataaccess.*;
 import org.opentest4j.AssertionFailedError;
 import passoff.exception.ResponseParseException;
 import model.*;
@@ -17,6 +18,9 @@ public class ChessService {
 
     public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
+    }
+    public void movePiece(ChessPosition start, ChessPosition end, DataAccess data, String authToken){
+        ;
     }
     public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
         System.out.println("joinGame22");
@@ -44,6 +48,9 @@ public class ChessService {
                 dataAccess.updatePlayers(username,game.getBlackUsername(),gameID);
             }
         }
+    }
+    public Game getGamebyGameID(Integer gameID){
+        return dataAccess.getGamebyGameID(gameID);
     }
     public Auth regUser(User userData) throws AssertionFailedError {
         if(getUser(userData) == null){

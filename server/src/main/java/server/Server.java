@@ -28,7 +28,7 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        server.websocket.WebSocketHandler webSocketHandler = new WebSocketHandler();
+        server.websocket.WebSocketHandler webSocketHandler = new WebSocketHandler(dataAccess);
 
         // Register your endpoints and exception handlers here.
         javalin.delete("/db", this::deleteAllGames);
