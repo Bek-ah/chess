@@ -43,9 +43,6 @@ public class ServerMessage {
     public void updateGame(ChessGame newGame) {
         game = newGame;
     }
-    public void newGame(){
-        game = new ChessGame();
-    }
     public void addMessage(String words){
         message = words;
     }

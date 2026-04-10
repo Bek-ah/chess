@@ -21,11 +21,7 @@ public class DrawBoard {
     public static Collection<ChessMove> highlightPos = new ArrayList<>();
     public static Collection<ChessPosition> highlight = new ArrayList<>();
     //IF YOU DON'T WANT TO HIGHLIGHT, PUT IN CHESSPOSITION(0,0)
-   /* public static void main(String[] args){
-        new DrawBoard(false, new ChessGame(), new ChessPosition(0,0));
-        System.out.println("CAN YOU SEE");
-        System.out.println("WHAT I SEEEE");
-    }*/
+
     public DrawBoard(boolean blackPlayer, ChessGame game, ChessPosition startPos) {
         if (blackPlayer){
             blackView = true;

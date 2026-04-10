@@ -62,7 +62,8 @@ public class UserMoveCommand {
             return false;
         }
         UserMoveCommand that = (UserMoveCommand) o;
-        return commandType == that.commandType && Objects.equals(authToken, that.authToken) && Objects.equals(gameID, that.gameID) && Objects.equals(move, that.move);
+        return commandType == that.commandType && Objects.equals(authToken, that.authToken)
+                && Objects.equals(gameID, that.gameID) && Objects.equals(move, that.move);
     }
 
     @Override
