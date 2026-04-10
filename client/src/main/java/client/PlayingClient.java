@@ -1,14 +1,17 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
 import model.Auth;
+import ui.DrawBoard;
 
 import java.net.http.HttpTimeoutException;
 import java.net.http.WebSocket;
 import java.nio.file.AccessDeniedException;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class PlayingClient {
@@ -20,6 +23,7 @@ public class PlayingClient {
             "Leave game: 'leave'\n" +
             "Highlight Legal Moves: 'highlight' <position>\n" +
             "Help remembering commands: 'help'\n";
+    private DrawBoard drawBoard;
 
     private ChessPosition inputToPosition(String input){
         int row = Character.getNumericValue(input.charAt(1));
@@ -49,6 +53,8 @@ public class PlayingClient {
         Scanner scanner = new Scanner(System.in);
         String playingPrompt = "GAME >>";//Change GAME to be the game name?
         var command = "";
+        boolean isBlack = playerColor.equals(ChessGame.TeamColor.BLACK);
+        //set drawBoard = new DrawBoard(isBlack, getOneGame());
         while (!command.equals("leave")) {
             System.out.print(playingPrompt);
             String line = scanner.nextLine();
@@ -59,6 +65,7 @@ public class PlayingClient {
                 ws.resign(auth.authToken(),gamePlayID);
             } else if (command.equals("redraw")){
                 System.out.println("redraw stub");
+
             } else if (command.equals("highlight")){
                 System.out.println("Highlight position: ");
                 String highPos = scanner.nextLine();

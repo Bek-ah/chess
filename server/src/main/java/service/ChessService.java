@@ -32,6 +32,9 @@ public class ChessService {
     public Auth getAuthData(String authToken){
         return dataAccess.getAuthbyToken(authToken);
     }
+    public Game getOneGame(int gameID){
+        return dataAccess.getGamebyGameID(gameID);
+    }
     public void joinGame(String authToken, String playerColor, int gameID, DataAccess dataAccess) throws AlreadyBoundException, AssertionError {
         System.out.println("joinGame22");
         if(!authenticate(authToken)){

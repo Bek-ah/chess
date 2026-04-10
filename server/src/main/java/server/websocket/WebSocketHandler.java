@@ -67,11 +67,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    public void error(String errorM, Session session) throws IOException {
+    public void error(String errorM, Session session, Integer gameID) throws IOException {
         try {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             notification.addErrorMessage(errorM);
-            connections.selfBroadcast(session, notification);
+            connections.selfBroadcast(session, notification, gameID);
         } catch (IOException ex) {
             throw new IOException("Error: throwing error");
         }
@@ -79,12 +79,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void move(UserMoveCommand action, Session session) throws IOException {
         int gameID = action.getGameID();
-        connections.add(session);
+        connections.add(session, gameID);
         ChessMove move = action.getMove();
         Game gameData = da.getGamebyGameID(gameID);
         chess.ChessGame game = gameData.getGame();
         if (gameData.getGame().getTeamTurn()==null) {
-            error("Error: Game is over", session);
+            error("Error: Game is over", session, gameID);
             return;
         }
         Auth auth = service.getAuthData(action.getAuthToken());
@@ -92,7 +92,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             movingPlayer = auth.username();
         } catch (NullPointerException n){
-            error("Unauthorized", session);
+            error("Unauthorized", session, gameID);
             return;
         }
         movingPlayer = auth.username();
@@ -106,27 +106,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             currentPlayerColor = ChessGame.TeamColor.BLACK;
         }
         if (!service.authenticate(action.getAuthToken())){
-            error("Unauthorized", session);
+            error("Unauthorized", session, gameID);
             return;
         } else if (gameData.getGame().getTeamTurn()==null) {
-            error("Error: Game is over", session);
+            error("Error: Game is over", session, gameID);
             return;
         } else if (!currentPlayer.equals(movingPlayer)){
-            error("Not your turn", session);
+            error("Not your turn", session, gameID);
             return;
         } else if (game.validMoves(move.getStartPosition()).contains(move.getEndPosition())){
-            error("Invalid move", session);
+            error("Invalid move", session, gameID);
             return;
         }
         try {
             game.makeMove(move);
         } catch (InvalidMoveException e){
-            error("Invalid move", session);
+            error("Invalid move", session, gameID);
             return;
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.addMessage("Player moved");
-        connections.broadcast(session, notification);
+        connections.broadcast(session, notification, gameID);
         ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
         if (currentPlayerColor== ChessGame.TeamColor.WHITE){
             opponent = ChessGame.TeamColor.BLACK;
@@ -134,33 +134,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (game.isInCheckmate(opponent)){
             var notificationWinner = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notificationWinner.addMessage("You won!");
-            connections.broadcast(null, notificationWinner);
+            connections.broadcast(null, notificationWinner,gameID);
         }
         var notificationS = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         notificationS.updateGame(game);
         gameData.setGame(game);
         service.movePiece(gameData, da, action.getAuthToken());
-        connections.broadcast(null, notificationS);
+        connections.broadcast(null, notificationS,gameID);
     }
     private void connect(UserGameCommand action, Session session) throws IOException {
         int gameID = action.getGameID();
         if (service.authenticate(action.getAuthToken())) {
             if (service.getGamebyGameID(gameID) != null) {
                 Game game = service.getGamebyGameID(gameID);
-                connections.add(session);
+                connections.add(session,gameID);
                 var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
                 var notificationOthers = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                 notification.updateGame(game.getGame());
-                notificationOthers.addMessage("Player has joined the game");
-                connections.selfBroadcast(session, notification);
-                connections.broadcast(session, notificationOthers);
+                String userName = da.getAuthbyToken(action.getAuthToken()).username();
+                if (game.getWhiteUsername().equals(userName) || game.getBlackUsername().equals(userName)){
+                    notificationOthers.addMessage("Player has joined the game");
+                } else {
+                    notificationOthers.addMessage("Observer has joined the game");
+                }
+                connections.selfBroadcast(session, notification, gameID);
+                connections.broadcast(session, notificationOthers,gameID);
             } else {
-                connections.add(session);
-                error("Error: Bad input", session);
+                connections.add(session,gameID);
+                error("Error: Bad input", session, gameID);
             }
         } else {
-            connections.add(session);
-            error("Error: Unauthorized", session);
+            connections.add(session,gameID);
+            error("Error: Unauthorized", session, gameID);
         }
     }
     private void exit(UserGameCommand action, Session session) throws IOException {
@@ -174,13 +179,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.addMessage("Player has left the game");
-        connections.broadcast(session, notification);
-        connections.remove(session);
+        connections.broadcast(session, notification, game.getID());
+        connections.remove(session, game.getID());
     }
     private void resign(UserGameCommand action, Session session) throws IOException {
         //put game over as true with resign function then update game
         int gameID = action.getGameID();
-        connections.add(session);
+        connections.add(session,gameID);
         ChessGame game = service.getGamebyGameID(gameID).getGame();
         Game gameData = service.getGamebyGameID(gameID);
         Auth authData = service.getAuthData(action.getAuthToken());
@@ -188,13 +193,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         boolean isPlayer = Objects.equals(user, gameData.getWhiteUsername())
                 || Objects.equals(user, gameData.getBlackUsername());
         if (!isPlayer){
-            error("Error: observer can't resign", session);
+            error("Error: observer can't resign", session, gameID);
             return;
         }
         if (gameData.getGame().getTeamTurn()!=null){
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.addMessage("Player resigned. Game over");
-            connections.broadcast(null, notification);
+            connections.broadcast(null, notification,gameID);
             game.resign(); //setTurnNull
             gameData.setGame(game); //nullTurnSetinGame
             da.updateGame(gameData.getGame(),gameID);
@@ -202,7 +207,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             var test = da.getGamebyGameID(gameID);
             ChessGame didItWork = test.getGame();
         } else {
-            error("Error: game over", session);
+            error("Error: game over", session, gameID);
         }
     }
 

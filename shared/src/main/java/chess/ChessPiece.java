@@ -71,17 +71,17 @@ public class ChessPiece {
         ChessPiece currentPiece = board.getPiece(myPosition);
         switch (currentPiece.getPieceType()) {
             //CHECK THAT THE getCol setCol are matching
-            case PieceType.PAWN: //promotion need updated
+            case PieceType.PAWN:
                 return new PawnMove().listMoves(board, myPosition);
-            case PieceType.BISHOP: //should be done //
+            case PieceType.BISHOP:
                 return new BishopMoves().listMoves(board, myPosition);
-            case PieceType.ROOK: //should be done //
+            case PieceType.ROOK:
                 return new RookMoves().listMoves(board, myPosition);
-            case PieceType.KING: //should be done //
+            case PieceType.KING:
                 return new KingMoves().listMoves(board, myPosition);
-            case PieceType.QUEEN: //should be done//
+            case PieceType.QUEEN:
                 return new QueenMoves().listMoves(myPosition, board);
-            case PieceType.KNIGHT: //should be done //
+            case PieceType.KNIGHT:
                 return new KnightMoves().listMoves(board, myPosition);
             default:
                 return Collections.emptyList();
