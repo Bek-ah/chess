@@ -21,6 +21,10 @@ public class WebSocketFacade extends Endpoint {
     String httpUrl;
     ChessGame gameBoard;
 
+    public ChessGame getGameBoard(){
+        return gameBoard;
+    }
+
     public WebSocketFacade(String url, Auth auth, NotificationHandler notificationHandler) {
         try {
             httpUrl = url;
@@ -39,6 +43,7 @@ public class WebSocketFacade extends Endpoint {
                     notificationHandler.notify(notification);
                     if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)){
                         gameBoard = notification.getGame();
+                        notificationHandler.notify(notification);
                     }
                 }
             });

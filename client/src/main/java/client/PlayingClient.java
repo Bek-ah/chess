@@ -24,6 +24,7 @@ public class PlayingClient {
             "Highlight Legal Moves: 'highlight' <position>\n" +
             "Help remembering commands: 'help'\n";
     private DrawBoard drawBoard;
+    private ChessPosition noHighlight = new ChessPosition(0,0);
 
     private ChessPosition inputToPosition(String input){
         int row = Character.getNumericValue(input.charAt(1));
@@ -32,7 +33,7 @@ public class PlayingClient {
         ChessPosition pos = new ChessPosition(row,col);
         return pos;
     }
-
+    private boolean isBlack = false;
     private boolean testInput(String input){
         if (input.length()>2){
             System.out.println("Error: please enter a valid position (ex: A1)");
@@ -50,10 +51,15 @@ public class PlayingClient {
     public PlayingClient(String playerColor, int gamePlayID, Auth auth, ServerFacade serv, WebSocketFacade ws) {
         System.out.print(helpMessage);
         ws.connect(auth.authToken(),gamePlayID);
+        if(playerColor.toLowerCase().equals("black")) {
+            isBlack = true;
+            new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
+        } else {
+            new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
+        }
         Scanner scanner = new Scanner(System.in);
         String playingPrompt = "GAME >>";//Change GAME to be the game name?
         var command = "";
-        boolean isBlack = playerColor.equals(ChessGame.TeamColor.BLACK);
         //set drawBoard = new DrawBoard(isBlack, getOneGame());
         while (!command.equals("leave")) {
             System.out.print(playingPrompt);
@@ -64,8 +70,7 @@ public class PlayingClient {
             } else if (command.equals("resign")){
                 ws.resign(auth.authToken(),gamePlayID);
             } else if (command.equals("redraw")){
-                System.out.println("redraw stub");
-
+                new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
             } else if (command.equals("highlight")){
                 System.out.println("Highlight position: ");
                 String highPos = scanner.nextLine();
@@ -73,7 +78,8 @@ public class PlayingClient {
                 if (!testInput(highPos)){
                     break;
                 }
-                System.out.println("Draw highlighted board stub");
+                ChessPosition highlightHere = inputToPosition(highPos);
+                new DrawBoard(isBlack, ws.getGameBoard(), highlightHere);
             } else if (command.equals("move")){
                 System.out.print("Piece position: ");
                 String startPos = scanner.nextLine().toLowerCase();

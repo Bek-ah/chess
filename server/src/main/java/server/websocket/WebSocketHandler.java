@@ -82,7 +82,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.add(session, gameID);
         ChessMove move = action.getMove();
         Game gameData = da.getGamebyGameID(gameID);
-        chess.ChessGame game = gameData.getGame();
+        chess.ChessGame game;
+        if (gameData.getGame() == null){
+            game = new ChessGame();
+        } else {
+            game = gameData.getGame();
+        }
         if (gameData.getGame().getTeamTurn()==null) {
             error("Error: Game is over", session, gameID);
             return;
@@ -125,7 +130,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.addMessage("Player moved");
+        String message = String.format("%s moved to " + move.getEndPosition(), auth.username());
+        notification.addMessage(message);
         connections.broadcast(session, notification, gameID);
         ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
         if (currentPlayerColor== ChessGame.TeamColor.WHITE){
@@ -133,7 +139,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         if (game.isInCheckmate(opponent)){
             var notificationWinner = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notificationWinner.addMessage("You won!");
+            String opName;
+            if (opponent== ChessGame.TeamColor.BLACK){
+                opName = gameData.getBlackUsername();
+            } else {
+                opName = gameData.getWhiteUsername();
+            }
+            String messageCheckmate = String.format("%s is in checkmate. Game over", opName);
+            notificationWinner.addMessage(messageCheckmate);
+            connections.broadcast(null, notificationWinner,gameID);
+        } else if (game.isInCheck(opponent)){
+            var notificationWinner = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            String opName;
+            if (opponent== ChessGame.TeamColor.BLACK){
+                opName = gameData.getBlackUsername();
+            } else {
+                opName = gameData.getWhiteUsername();
+            }
+            String messageCheck = String.format("%s is in check", opName);
+            notificationWinner.addMessage(messageCheck);
             connections.broadcast(null, notificationWinner,gameID);
         }
         var notificationS = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
@@ -150,12 +174,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 connections.add(session,gameID);
                 var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
                 var notificationOthers = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notification.updateGame(game.getGame());
-                String userName = da.getAuthbyToken(action.getAuthToken()).username();
-                if (game.getWhiteUsername().equals(userName) || game.getBlackUsername().equals(userName)){
-                    notificationOthers.addMessage("Player has joined the game");
+                if (game.getGame()==null){
+                    notification.updateGame(new ChessGame());
                 } else {
-                    notificationOthers.addMessage("Observer has joined the game");
+                    notification.updateGame(game.getGame());
+                }
+                String userName = da.getAuthbyToken(action.getAuthToken()).username();
+                if (game.getWhiteUsername().equals(userName)){
+                    String message = String.format("%s has joined the game",game.getWhiteUsername());
+                    notificationOthers.addMessage(message);
+                } else if (game.getBlackUsername().equals(userName)){
+                    String message = String.format("%s has joined the game",game.getBlackUsername());
+                    notificationOthers.addMessage(message);
+                } else {
+                    Auth auth = da.getAuthbyToken(action.getAuthToken());
+                    String message = String.format("%s has joined the game",auth.username());
+                    notificationOthers.addMessage(message);
                 }
                 connections.selfBroadcast(session, notification, gameID);
                 connections.broadcast(session, notificationOthers,gameID);
@@ -178,7 +212,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             da.updatePlayers(game.getWhiteUsername(),null,action.getGameID());
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notification.addMessage("Player has left the game");
+        String message = String.format("%s left the game", auth.username());
+        notification.addMessage(message);
         connections.broadcast(session, notification, game.getID());
         connections.remove(session, game.getID());
     }
@@ -198,7 +233,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         if (gameData.getGame().getTeamTurn()!=null){
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notification.addMessage("Player resigned. Game over");
+            String message = String.format("%s resigned. Game over", authData.username());
+            notification.addMessage(message);
             connections.broadcast(null, notification,gameID);
             game.resign(); //setTurnNull
             gameData.setGame(game); //nullTurnSetinGame

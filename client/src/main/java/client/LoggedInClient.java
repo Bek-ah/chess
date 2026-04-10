@@ -30,7 +30,6 @@ public class LoggedInClient {
         if(playerColor.equals("BLACK")) {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200) {
-                new DrawBoard(true, new ChessGame());
                 new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
             } else if (response != 30) {
                 System.out.println("player taken"); //why else if (response !=30) for black and just else for white? possible bug
@@ -39,7 +38,6 @@ public class LoggedInClient {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200){
                 System.out.println("response 200: Attempting ws connection:");
-                new DrawBoard(false, new ChessGame());
                 new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
             } else {
                 System.out.println("Color not available");
@@ -69,8 +67,7 @@ public class LoggedInClient {
                 System.out.println("Error: please enter the correct game number");
                 return 302;
             }
-            new ObservingClient(id, auth, serv);
-            new DrawBoard(false, new ChessGame());
+            new ObservingClient(id, auth, serv, ws);
             return 0;
         } catch (NullPointerException n) {
             System.out.println("Please enter a valid game number");
