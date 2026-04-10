@@ -1,8 +1,10 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.ChessPosition;
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -12,6 +14,7 @@ import passoff.exception.ResponseParseException;
 import java.sql.*;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class MySqulDataAccess implements DataAccess {
@@ -117,8 +120,46 @@ public class MySqulDataAccess implements DataAccess {
         newGame.setWhitePlayer(rs.getString("whiteUsername"));
         newGame.setBlackPlayer(rs.getString("blackUsername"));
         String tempGame = rs.getString("game");
-        ChessGame game = new Gson().fromJson(tempGame, ChessGame.class);
+        newGame.setGame(readOneGame(tempGame));
         return newGame;
+    }
+
+    private Gson boardSerializer() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        // IMPORTANT: this is where your ChessPosition map fix lives
+        gsonBuilder.registerTypeAdapter(
+                new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(),
+                (JsonDeserializer<HashMap<ChessPosition, ChessPiece>>) (json, type, ctx) -> {
+
+                    HashMap<ChessPosition, ChessPiece> map = new HashMap<>();
+                    JsonObject obj = json.getAsJsonObject();
+
+                    for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+
+                        String[] parts = entry.getKey().split(",");
+
+                        ChessPosition pos = new ChessPosition(
+                                Integer.parseInt(parts[0]),
+                                Integer.parseInt(parts[1])
+                        );
+
+                        ChessPiece piece = ctx.deserialize(entry.getValue(), ChessPiece.class);
+
+                        map.put(pos, piece);
+                    }
+
+                    return map;
+                }
+        );
+
+
+        return gsonBuilder.create();
+    }
+
+    private ChessGame readOneGame(String json) throws SQLException {
+        Gson gson = boardSerializer();
+        return gson.fromJson(json, ChessGame.class);
     }
 
     private Auth readAuth(ResultSet rs) throws SQLException {

@@ -9,6 +9,10 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    @Override
+    public String toString() {
+        return myRow + "," + myCol;
+    }
 
     int myRow;
     int myCol;

@@ -83,13 +83,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessMove move = action.getMove();
         ChessGame game;
         Game gameData;
-        try {
-            gameData = da.getGamebyGameID(gameID);
-            game = gameData.getGame();
-        } catch (ResponseParseException r){
-            error("Game not found", session);
-            return;
-        }
         gameData = da.getGamebyGameID(gameID);
         game = gameData.getGame();
         Auth auth = service.getAuthData(action.getAuthToken());
@@ -132,6 +125,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.addMessage("Player moved");
         connections.broadcast(session, notification);
+        ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
+        if (currentPlayerColor== ChessGame.TeamColor.WHITE){
+            opponent = ChessGame.TeamColor.BLACK;
+        }
+        if (game.isInCheckmate(opponent)){
+            var notificationWinner = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notificationWinner.addMessage("You won!");
+            connections.broadcast(null, notificationWinner);
+        }
         var notificationS = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         notificationS.updateGame(game);
         gameData.setGame(game);
