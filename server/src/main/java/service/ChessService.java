@@ -22,12 +22,11 @@ public class ChessService {
     }
     public void movePiece(Game game, DataAccess data, String authToken){
         //take in the game and dataaccess info, send to mySqulDataAccess
+        //more like updateGame function
         if(!authenticate(authToken)){
             throw new AssertionError();
         }
-        System.out.println("authenticated chessservice26: ");
-         dataAccess.getGamebyGameID(game.getID());
-
+        dataAccess.getGamebyGameID(game.getID());
         data.updateGame(game.getGame(),game.getID());
     }
     public Auth getAuthData(String authToken){

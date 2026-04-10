@@ -90,6 +90,9 @@ public class Server {
                 ctx.status(200);
                 ctx.result(bodyText);
             }
+        } catch (IllegalAccessError i) {
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message","Error: unauthorized")));
         } catch (ClassNotFoundException e){
             ctx.status(401);
             ctx.result(new Gson().toJson(Map.of("message","Error: bad request")));

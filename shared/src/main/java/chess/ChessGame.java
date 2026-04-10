@@ -201,6 +201,7 @@ public class ChessGame {
                     }
                 }
             }
+            setTeamTurn(null);
             return true;
         }
         return false;

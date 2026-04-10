@@ -81,10 +81,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         int gameID = action.getGameID();
         connections.add(session);
         ChessMove move = action.getMove();
-        ChessGame game;
-        Game gameData;
-        gameData = da.getGamebyGameID(gameID);
-        game = gameData.getGame();
+        Game gameData = da.getGamebyGameID(gameID);
+        chess.ChessGame game = gameData.getGame();
+        if (gameData.getGame().getTeamTurn()==null) {
+            error("Error: Game is over", session);
+            return;
+        }
         Auth auth = service.getAuthData(action.getAuthToken());
         String movingPlayer;
         try{
@@ -106,7 +108,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (!service.authenticate(action.getAuthToken())){
             error("Unauthorized", session);
             return;
-        } else if (game.getTeamTurn()==null) {
+        } else if (gameData.getGame().getTeamTurn()==null) {
             error("Error: Game is over", session);
             return;
         } else if (!currentPlayer.equals(movingPlayer)){
@@ -163,6 +165,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
     private void exit(UserGameCommand action, Session session) throws IOException {
         //remove playerUsername from game, then update game
+        Game game = service.getGamebyGameID(action.getGameID());
+        Auth auth = service.getAuthData(action.getAuthToken());
+        if (auth.username().equals(game.getWhiteUsername())){
+            game.setWhitePlayer("");
+        } else {
+            game.setBlackPlayer("");
+        }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.addMessage("Player has left the game");
         connections.broadcast(session, notification);
@@ -181,13 +190,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             error("Error: observer can't resign", session);
             return;
         }
-        if (game.getTeamTurn()!=null){
+        if (gameData.getGame().getTeamTurn()!=null){
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notification.addMessage("Player resigned. Game over");
             connections.broadcast(null, notification);
-            gameData.getGame().resign();
+            game.resign(); //setTurnNull
+            gameData.setGame(game); //nullTurnSetinGame
             service.movePiece(gameData, da, action.getAuthToken());
-        } else if (game.getTeamTurn()==null) {
+        } else {
             error("Error: game over", session);
         }
     }
