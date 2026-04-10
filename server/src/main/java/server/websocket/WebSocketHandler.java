@@ -168,9 +168,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         Game game = service.getGamebyGameID(action.getGameID());
         Auth auth = service.getAuthData(action.getAuthToken());
         if (auth.username().equals(game.getWhiteUsername())){
-            game.setWhitePlayer("");
+            da.updatePlayers(null,game.getBlackUsername(),action.getGameID());
         } else {
-            game.setBlackPlayer("");
+            da.updatePlayers(game.getWhiteUsername(),null,action.getGameID());
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notification.addMessage("Player has left the game");
