@@ -44,6 +44,9 @@ public class LoggedOutClient {
                 String password = scanner.nextLine();
                 System.out.print("Email: ");
                 String email = scanner.nextLine();
+                if (username.isBlank()){
+                    System.out.print("Error: cannot be blank");
+                }
                 ServerFacade serv = new ServerFacade(serverURL);
                 Auth auth = serv.register(username, password, email);
                 if (!auth.authToken().isEmpty()){

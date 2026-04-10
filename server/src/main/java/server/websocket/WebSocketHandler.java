@@ -185,7 +185,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         Game gameData = service.getGamebyGameID(gameID);
         Auth authData = service.getAuthData(action.getAuthToken());
         String user = authData.username();
-        boolean isPlayer = Objects.equals(user, gameData.getWhiteUsername()) || Objects.equals(user, gameData.getBlackUsername());
+        boolean isPlayer = Objects.equals(user, gameData.getWhiteUsername())
+                || Objects.equals(user, gameData.getBlackUsername());
         if (!isPlayer){
             error("Error: observer can't resign", session);
             return;
@@ -196,7 +197,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(null, notification);
             game.resign(); //setTurnNull
             gameData.setGame(game); //nullTurnSetinGame
+            da.updateGame(gameData.getGame(),gameID);
             service.movePiece(gameData, da, action.getAuthToken());
+            var test = da.getGamebyGameID(gameID);
+            ChessGame didItWork = test.getGame();
         } else {
             error("Error: game over", session);
         }

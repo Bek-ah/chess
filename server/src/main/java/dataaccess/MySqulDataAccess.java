@@ -37,7 +37,7 @@ public class MySqulDataAccess implements DataAccess {
     public void updateGame(ChessGame game, Integer gameID){
         var statement = "UPDATE gameTable SET game = ? WHERE `gameID` = ?";
         try (var conn = DatabaseManager.getConnection()) {
-            String json = new Gson().toJson(game);
+            String json = new GsonBuilder().serializeNulls().create().toJson(game);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, json);
                 preparedStatement.setInt(2, gameID);

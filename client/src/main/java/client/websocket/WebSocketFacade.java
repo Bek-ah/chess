@@ -1,6 +1,8 @@
 package client.websocket;
+import chess.ChessMove;
 import client.ServerFacade;
 import model.Auth;
+import websocket.commands.UserMoveCommand;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 import com.google.gson.Gson;
@@ -44,9 +46,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void movePiece(String auth, Integer gameID) {
+    public void movePiece(String auth, Integer gameID, ChessMove move) {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
+            var action = new UserMoveCommand(UserMoveCommand.CommandType.MAKE_MOVE, auth, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             System.out.println("problem with moving piece");
@@ -61,16 +63,7 @@ public class WebSocketFacade extends Endpoint {
             System.out.println("problem with connection");
         }
     }
-    public void login(String auth, Integer gameID) {
-        try {
-            System.out.println("Trying login ws facade");
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameID);
-            System.out.println("madeMessage");
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            System.out.println("problem with login ws facade");
-        }
-    }
+
     public void leave(String auth, Integer gameID) {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, gameID);

@@ -39,7 +39,6 @@ public class LoggedInClient {
             int response = serv.joinGame(playerColor, gamePlayID, auth);
             if (response == 200){
                 System.out.println("response 200: Attempting ws connection:");
-                ws.connect(auth.toString(),gamePlayID);
                 new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
                 new DrawBoard(false, new ChessGame());
             } else {
@@ -101,6 +100,9 @@ public class LoggedInClient {
                 } else if (command.equals("create")) {
                     System.out.print("Game name: ");
                     String gameName = scanner.nextLine();
+                    if (gameName.isBlank()){
+                        System.out.print("Error: cannot be blank");
+                    }
                     int gameID = serv.createGame(gameName, auth);
                     if (gameID == 401) {
                         System.out.print("Error: unable to make new game\n");
@@ -108,7 +110,7 @@ public class LoggedInClient {
                     }
                 } else if (command.equals("list")) {
                     HashMap<Integer, GameJson> gamesList = serv.getGames(auth, null);
-                    System.out.println("index | gameID | gameName | whiteUsername | blackUsername");
+                    System.out.println("Game Number | Game Name | White Player | Black Player");
                     for (int index = 1; index <= gamesList.size(); index++){
                         int gameID = gamesList.get(index).getGameID();
                         String gameName = gamesList.get(index).getGameName();

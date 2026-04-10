@@ -1,5 +1,8 @@
 package client;
 
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
 import model.Auth;
 
@@ -13,14 +16,36 @@ public class PlayingClient {
     private static String helpMessage = "Options (not case sensative):\n" +
             "Redraw the board: 'redraw'\n" +
             "Resign: 'resign'\n" +
-            "Make a move: 'move' <starting position> <end position> (example of position: A1)\n" +
+            "Make a move: 'move' <start position> <end position> (example of position: A1)\n" +
             "Leave game: 'leave'\n" +
             "Highlight Legal Moves: 'highlight' <position>\n" +
             "Help remembering commands: 'help'\n";
 
+    private ChessPosition inputToPosition(String input){
+        int row = Character.getNumericValue(input.charAt(1));
+        char colTemp = input.charAt(0);
+        int col = colTemp - 'a' + 1;
+        ChessPosition pos = new ChessPosition(row,col);
+        return pos;
+    }
+
+    private boolean testInput(String input){
+        if (input.length()>2){
+            System.out.println("Error: please enter a valid position (ex: A1)");
+            return false;
+        } else if (input.isBlank()){
+            System.out.println("Error: please enter a position");
+            return false;
+        } else if (!input.matches("[A-Za-z][1-8]")){
+            System.out.println("Error: please enter column then row (ex: A1)");
+            return false;
+        }
+        return true;
+    }
+
     public PlayingClient(String playerColor, int gamePlayID, Auth auth, ServerFacade serv, WebSocketFacade ws) {
         System.out.print(helpMessage);
-        ws.connect(auth.toString(),gamePlayID);
+        ws.connect(auth.authToken(),gamePlayID);
         Scanner scanner = new Scanner(System.in);
         String playingPrompt = "GAME >>";//Change GAME to be the game name?
         var command = "";
@@ -31,19 +56,36 @@ public class PlayingClient {
             if (command.equals("help")) {
                 System.out.print(helpMessage);
             } else if (command.equals("resign")){
-                System.out.println("resign stub");
+                ws.resign(auth.authToken(),gamePlayID);
             } else if (command.equals("redraw")){
                 System.out.println("redraw stub");
             } else if (command.equals("highlight")){
-                System.out.println("highlight stub");
+                System.out.println("Highlight position: ");
+                String highPos = scanner.nextLine();
+                highPos.toLowerCase();
+                if (!testInput(highPos)){
+                    break;
+                }
+                System.out.println("Draw highlighted board stub");
             } else if (command.equals("move")){
-                System.out.print("move stub");
-                String username = scanner.nextLine();
-                System.out.print("move end: ");
+                System.out.print("Piece position: ");
+                String startPos = scanner.nextLine().toLowerCase();
+                if (!testInput(startPos)){
+                    break;
+                }
+                System.out.print("Move to: ");
                 String endPos = scanner.nextLine();
+                if (!testInput(startPos)){
+                    break;
+                }
+                ChessPosition startpos = inputToPosition(startPos);
+                ChessPosition endpos = inputToPosition(endPos);
+                ChessMove move = new ChessMove(startpos,endpos,null);
+                ws.movePiece(auth.authToken(), gamePlayID, move);
             } else if (!command.equals("leave")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
             }
         }
+        ws.leave(auth.authToken(),gamePlayID);
     }
 }
