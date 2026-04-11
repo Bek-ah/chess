@@ -72,11 +72,11 @@ public class PlayingClient {
             } else if (command.equals("redraw")){
                 new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
             } else if (command.equals("highlight")){
-                System.out.println("Highlight position: ");
+                System.out.print("Highlight position: ");
                 String highPos = scanner.nextLine();
                 highPos.toLowerCase();
                 if (!testInput(highPos)){
-                    break;
+                    continue;
                 }
                 ChessPosition highlightHere = inputToPosition(highPos);
                 new DrawBoard(isBlack, ws.getGameBoard(), highlightHere);
@@ -84,12 +84,12 @@ public class PlayingClient {
                 System.out.print("Piece position: ");
                 String startPos = scanner.nextLine().toLowerCase();
                 if (!testInput(startPos)){
-                    break;
+                    continue;
                 }
                 System.out.print("Move to: ");
                 String endPos = scanner.nextLine();
                 if (!testInput(startPos)){
-                    break;
+                    continue;
                 }
                 ChessPosition startpos = inputToPosition(startPos);
                 ChessPosition endpos = inputToPosition(endPos);

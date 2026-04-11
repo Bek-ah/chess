@@ -61,6 +61,32 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ex.printStackTrace();
         }
     }
+    public String prettyPosition(ChessPosition position){
+        Integer tempCol = position.getColumn();
+        Integer tempRow = position.getRow();
+        String row = tempRow.toString();
+        String col = "Unknown";
+        switch(tempCol){
+            case 1:
+                col = "A";
+            case 2:
+                col = "B";
+            case 3:
+                col = "C";
+            case 4:
+                col = "D";
+            case 5:
+                col = "E";
+            case 6:
+                col = "F";
+            case 7:
+                col = "G";
+            case 8:
+                col = "H";
+        }
+        return String.format(col + row);
+    }
+
 
     @Override
     public void handleClose(WsCloseContext ctx) {
@@ -97,7 +123,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             movingPlayer = auth.username();
         } catch (NullPointerException n){
-            error("Unauthorized", session, gameID);
+            error("Error: Unauthorized", session, gameID);
             return;
         }
         movingPlayer = auth.username();
@@ -111,26 +137,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             currentPlayerColor = ChessGame.TeamColor.BLACK;
         }
         if (!service.authenticate(action.getAuthToken())){
-            error("Unauthorized", session, gameID);
+            error("Error: Unauthorized", session, gameID);
             return;
         } else if (gameData.getGame().getTeamTurn()==null) {
             error("Error: Game is over", session, gameID);
             return;
         } else if (!currentPlayer.equals(movingPlayer)){
-            error("Not your turn", session, gameID);
+            error("Error: Not your turn", session, gameID);
             return;
         } else if (game.validMoves(move.getStartPosition()).contains(move.getEndPosition())){
-            error("Invalid move", session, gameID);
+            error("Error: Invalid move", session, gameID);
             return;
         }
         try {
             game.makeMove(move);
         } catch (InvalidMoveException e){
-            error("Invalid move", session, gameID);
+            error("Error: Invalid move", session, gameID);
             return;
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        String message = String.format("%s moved to " + move.getEndPosition(), auth.username());
+        String pos = prettyPosition(move.getEndPosition());
+        String message = String.format("%s moved to " + pos + "\n", auth.username());
         notification.addMessage(message);
         connections.broadcast(session, notification, gameID);
         ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
@@ -180,10 +207,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     notification.updateGame(game.getGame());
                 }
                 String userName = da.getAuthbyToken(action.getAuthToken()).username();
-                if (game.getWhiteUsername().equals(userName)){
+                if (game.getWhiteUsername() == userName){
                     String message = String.format("%s has joined the game",game.getWhiteUsername());
                     notificationOthers.addMessage(message);
-                } else if (game.getBlackUsername().equals(userName)){
+                } else if (game.getBlackUsername() == userName){
                     String message = String.format("%s has joined the game",game.getBlackUsername());
                     notificationOthers.addMessage(message);
                 } else {

@@ -36,6 +36,14 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public String getServerMessage(){
+        return this.message;
+    }
+
+    public String getErrorMessage(){
+        return this.errorMessage;
+    }
+
     public ChessGame getGame() {
         return this.game;
     }

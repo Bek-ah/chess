@@ -26,19 +26,19 @@ public class LoggedInClient {
         }
         return "No user";
     }
-    public void joining(String playerColor, int gamePlayID, Auth auth, ServerFacade serv){
+    public void joining(String playerColor, int gameIndex, Auth auth, ServerFacade serv, int gameID){
         if(playerColor.equals("BLACK")) {
-            int response = serv.joinGame(playerColor, gamePlayID, auth);
+            int response = serv.joinGame(playerColor, gameIndex, auth);
             if (response == 200) {
-                new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
+                new PlayingClient(playerColor, gameID, auth, serv, ws);
             } else if (response != 30) {
                 System.out.println("player taken"); //why else if (response !=30) for black and just else for white? possible bug
             }
         } else if (playerColor.equals("WHITE")) {
-            int response = serv.joinGame(playerColor, gamePlayID, auth);
+            int response = serv.joinGame(playerColor, gameIndex, auth);
             if (response == 200){
                 System.out.println("response 200: Attempting ws connection:");
-                new PlayingClient(playerColor, gamePlayID, auth, serv, ws);
+                new PlayingClient(playerColor, gameID, auth, serv, ws);
             } else {
                 System.out.println("Color not available");
             }
@@ -67,7 +67,8 @@ public class LoggedInClient {
                 System.out.println("Error: please enter the correct game number");
                 return 302;
             }
-            new ObservingClient(id, auth, serv, ws);
+            int gameID = list.get(id).getGameID();
+            new ObservingClient(gameID, auth, serv, ws);
             return 0;
         } catch (NullPointerException n) {
             System.out.println("Please enter a valid game number");
@@ -119,13 +120,16 @@ public class LoggedInClient {
                     }
                 } else if (command.equals("play")) {
                     System.out.print("Please enter the gameID: ");
-                    Integer gamePlayID;
+                    Integer gamePlayIndex;
                     if (scanner.hasNextInt()) {
-                        gamePlayID = scanner.nextInt();
+                        gamePlayIndex = scanner.nextInt();
                         scanner.nextLine();
+                        //find gameID by gameIndex
+                        HashMap<Integer, GameJson> gamesList = serv.getGames(auth, null);
+                        int gameID = gamesList.get(gamePlayIndex).getGameID();
                         System.out.print("Select <BLACK> or <WHITE>: ");
                         String playerColor = scanner.nextLine().toUpperCase();
-                        joining(playerColor, gamePlayID, auth, serv);
+                        joining(playerColor, gamePlayIndex, auth, serv, gameID);
                     } else {
                         System.out.println("Error: Game ID must be a number");
                     }

@@ -31,11 +31,13 @@ public class DrawBoard {
         }
         if (!startPos.equals(new ChessPosition(0,0))) {
             ChessPiece piece = game.getBoard().getPiece(startPos);
-            highlightPos = piece.pieceMoves(game.getBoard(), startPos);
-            highlight.add(startPos);
-            for (ChessMove m : highlightPos) {
-                highlight.add(m.getEndPosition());
+            if (piece != null){
+                highlightPos = piece.pieceMoves(game.getBoard(), startPos);
+                for (ChessMove m : highlightPos) {
+                    highlight.add(m.getEndPosition());
+                }
             }
+            highlight.add(startPos);
         }
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -49,6 +51,9 @@ public class DrawBoard {
 
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
+        highlightPos = new ArrayList<>();
+        highlight = new ArrayList<>();
+
     }
 
     private static void drawLetters(PrintStream out) {

@@ -126,8 +126,7 @@ public class MySqulDataAccess implements DataAccess {
 
     private Gson boardSerializer() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-
-        // IMPORTANT: this is where your ChessPosition map fix lives
+        // ChessPosition map fix
         gsonBuilder.registerTypeAdapter(
                 new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(),
                 (JsonDeserializer<HashMap<ChessPosition, ChessPiece>>) (json, type, ctx) -> {
