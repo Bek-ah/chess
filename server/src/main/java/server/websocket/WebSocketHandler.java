@@ -61,28 +61,39 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ex.printStackTrace();
         }
     }
-    public String prettyPosition(ChessPosition position){
+    public String prettyPosition(ChessPosition position, boolean isBlack){
         Integer tempCol = position.getColumn();
         Integer tempRow = position.getRow();
         String row = tempRow.toString();
         String col = "Unknown";
+        /*if (isBlack){
+            tempCol = 9 - tempCol;
+        }*/
         switch(tempCol){
             case 1:
                 col = "A";
+                break;
             case 2:
                 col = "B";
+                break;
             case 3:
                 col = "C";
+                break;
             case 4:
                 col = "D";
+                break;
             case 5:
                 col = "E";
+                break;
             case 6:
                 col = "F";
+                break;
             case 7:
                 col = "G";
+                break;
             case 8:
                 col = "H";
+                break;
         }
         return String.format(col + row);
     }
@@ -145,7 +156,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else if (!currentPlayer.equals(movingPlayer)){
             error("Error: Not your turn", session, gameID);
             return;
-        } else if (game.validMoves(move.getStartPosition()).contains(move.getEndPosition())){
+        } else if (!game.validMoves(move.getStartPosition()).contains(move)){
             error("Error: Invalid move", session, gameID);
             return;
         }
@@ -156,8 +167,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        String pos = prettyPosition(move.getEndPosition());
-        String message = String.format("%s moved to " + pos + "\n", auth.username());
+        boolean isB = game.getBoard().getPiece(move.getEndPosition())
+                .getTeamColor().equals(ChessGame.TeamColor.BLACK);
+        String endpos = prettyPosition(move.getEndPosition(),isB);
+        String startpos = prettyPosition(move.getStartPosition(),isB);
+        String promoMes = "";
+        if (move.getPromotionPiece()!=null){
+            String pr = move.getPromotionPiece().name();
+            promoMes = "(pawn promoted to " + pr + ")\n";
+        }
+        String message = String.format("%s moved to " + endpos + " from " + startpos, auth.username() + promoMes);
         notification.addMessage(message);
         connections.broadcast(session, notification, gameID);
         ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;

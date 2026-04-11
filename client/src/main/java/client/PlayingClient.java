@@ -1,11 +1,9 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.websocket.WebSocketFacade;
 import model.Auth;
+import model.Game;
 import ui.DrawBoard;
 
 import java.net.http.HttpTimeoutException;
@@ -68,7 +66,11 @@ public class PlayingClient {
             if (command.equals("help")) {
                 System.out.print(helpMessage);
             } else if (command.equals("resign")){
-                ws.resign(auth.authToken(),gamePlayID);
+                System.out.print("Type y to confirm resignation");
+                String confirm = scanner.nextLine().toLowerCase();
+                if (confirm.equals("y")) {
+                    ws.resign(auth.authToken(), gamePlayID);
+                }
             } else if (command.equals("redraw")){
                 new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
             } else if (command.equals("highlight")){
@@ -88,12 +90,41 @@ public class PlayingClient {
                 }
                 System.out.print("Move to: ");
                 String endPos = scanner.nextLine();
-                if (!testInput(startPos)){
+                if (!testInput(endPos)){
                     continue;
                 }
                 ChessPosition startpos = inputToPosition(startPos);
                 ChessPosition endpos = inputToPosition(endPos);
-                ChessMove move = new ChessMove(startpos,endpos,null);
+                ChessGame gameBoard = ws.getGameBoard();
+                Collection <chess.ChessMove> validMoveList = gameBoard.validMoves(startpos);
+                ChessPiece.PieceType promoPiece = null;
+                boolean isPawn = gameBoard.getBoard().getPiece(startpos)
+                        .getPieceType().equals(ChessPiece.PieceType.PAWN);
+                if ((endpos.getRow()==8) || (endpos.getRow()==1)) {
+                    if (isPawn) {
+                        System.out.print("Promote to: " +
+                                "N - knight, Q - queen,\n" +
+                                " R - rook, B - bishop\n");
+                        String promotionPiece = scanner.nextLine().toLowerCase();
+                        switch(promotionPiece){
+                            case "n":
+                                promoPiece = ChessPiece.PieceType.KNIGHT;
+                                break;
+                            case "q":
+                                promoPiece = ChessPiece.PieceType.QUEEN;
+                                break;
+                            case "r":
+                                promoPiece = ChessPiece.PieceType.ROOK;
+                                break;
+                            case "b":
+                                promoPiece = ChessPiece.PieceType.BISHOP;
+                                break;
+                            default:
+                                System.out.print("Error: Please type n, r, q, or b");
+                        }
+                    }
+                }
+                ChessMove move = new ChessMove(startpos,endpos,promoPiece);
                 ws.movePiece(auth.authToken(), gamePlayID, move);
             } else if (!command.equals("leave")) {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");

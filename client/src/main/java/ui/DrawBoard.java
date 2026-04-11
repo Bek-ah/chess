@@ -32,7 +32,7 @@ public class DrawBoard {
         if (!startPos.equals(new ChessPosition(0,0))) {
             ChessPiece piece = game.getBoard().getPiece(startPos);
             if (piece != null){
-                highlightPos = piece.pieceMoves(game.getBoard(), startPos);
+                highlightPos = game.validMoves(startPos);
                 for (ChessMove m : highlightPos) {
                     highlight.add(m.getEndPosition());
                 }
