@@ -7,17 +7,19 @@ import java.nio.file.AccessDeniedException;
 import java.util.Scanner;
 
 public class LoggedOutClient {
-    private static String helpMessage = "Options (not case sensative):\n" +
+    private static String helpMessage =
+            "_________________________________________\n" +
+            "Options (not case sensative):\n" +
             "Login: 'login' <USERNAME> <PASSWORD>\n" +
             "Register: 'register' <USERNAME> <PASSWORD> <EMAIL>\n" +
             "Exit chess program: 'quit'\n" +
-            "Help remembering commands: 'help'\n";
-
+            "Help remembering commands: 'help'\n" +
+            "_________________________________________\n";
     public LoggedOutClient(String serverURL) {
         System.out.println("♕ 240 Chess Type 'help' to get started ♕");
         System.out.print(helpMessage);
         Scanner scanner = new Scanner(System.in);
-        String loggedOutPrompt = "LOGGED OUT>>";
+        String loggedOutPrompt = "LOGGED OUT>> ";
         var command = "";
         while (!command.equals("quit")) {
             System.out.print(loggedOutPrompt);

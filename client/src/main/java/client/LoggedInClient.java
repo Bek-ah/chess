@@ -13,13 +13,16 @@ import java.util.Scanner;
 
 public class LoggedInClient {
     private final WebSocketFacade ws;
-    private static String helpMessage = "Options (not case sensative):\n" +
+    private static String helpMessage =
+            "_________________________________________\n" +
+            "Options (not case sensative):\n" +
             "Logout: 'logout'\n" +
             "Create a new Game: 'create' <GAME NAME>\n" +
             "List Games (with their IDs): 'list'\n" +
             "Play a Game: 'play' <GAME ID>\n" +
             "Observe a Game: 'observe' <GAME ID>\n" +
-            "Help remembering commands: 'help'\n";
+            "Help remembering commands: 'help'\n" +
+            "_________________________________________\n";
     public String setW(String test){
         if (test != null){
             return test;
@@ -78,7 +81,7 @@ public class LoggedInClient {
 
     public LoggedInClient(String serverURL, Auth auth) {
         Scanner scanner = new Scanner(System.in);
-        String loggedInPrompt = "LOGGED IN>>";
+        String loggedInPrompt = "LOGGED IN>> ";
         var command = "";
         ServerFacade serv = new ServerFacade(serverURL);
         NotificationHandler notify = new LoadGameMessage();
