@@ -59,7 +59,7 @@ public class PlayingClient {
             new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
         }*/
         Scanner scanner = new Scanner(System.in);
-        String playingPrompt = "GAME >> ";//Change GAME to be the game name?
+        String playingPrompt = "GAME>> ";//Change GAME to be the game name?
         var command = "";
         //set drawBoard = new DrawBoard(isBlack, getOneGame());
         while (!command.equals("leave")) {
@@ -92,6 +92,7 @@ public class PlayingClient {
                 boolean isBlack = ws.getGameBoard().getTeamTurn() == ChessGame.TeamColor.BLACK;
                 if (playerColor.equalsIgnoreCase("black") != isBlack){
                     System.out.println("Error: not your turn");
+                    System.out.print(playingPrompt);
                     continue;
                 }
                 System.out.print("Piece position: ");
