@@ -47,8 +47,8 @@ public class DrawBoard {
 
         drawLetters(out);
 
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
         highlightPos = new ArrayList<>();
         highlight = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class DrawBoard {
 
     private static void printHeaderText(PrintStream out, String player) {
         out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
 
         out.print(player);
 
@@ -152,12 +152,13 @@ public class DrawBoard {
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
 
                     out.print(EMPTY.repeat(prefixLength));
+                    //SQUARE BACKGROUND COLOR
                     if (highlight.contains(currentPos)){
-                        out.print(SET_BG_COLOR_YELLOW);
+                        out.print(SET_BG_COLOR_LIGHT_WHITE);
                     } else if (((boardCol+row)%2)==1){
-                        out.print(SET_BG_COLOR_LIGHT_GREY);
+                        out.print(SET_BG_COLOR_LIGHT_TILE);
                     } else {
-                        out.print(SET_BG_COLOR_DARK_GREY);
+                        out.print(SET_BG_COLOR_DARK_TILE);
                     }
                     if (blackView){
                         printPlayer(out, pieceText(out, game, new ChessPosition(row, 8-boardCol)));
@@ -186,9 +187,9 @@ public class DrawBoard {
             out.println();
         }
     }
-
+    //PIECE COLOR
     private static void setWhite(PrintStream out) {
-        out.print(SET_TEXT_COLOR_BLUE);
+        out.print(SET_TEXT_COLOR_PURPLE);
     }
 
     private static void setIDK(PrintStream out) {
@@ -198,6 +199,7 @@ public class DrawBoard {
     private static void setBlack(PrintStream out) {
         out.print(SET_TEXT_COLOR_BLACK);
     }
+
     private static void printPlayer(PrintStream out, String piece) {
         out.print(" " + piece + " ");
         setWhite(out);
