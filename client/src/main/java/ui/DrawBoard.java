@@ -16,16 +16,14 @@ public class DrawBoard {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
     private static final int LINE_WIDTH_IN_PADDED_CHARS = 0;
-    public static boolean blackView = false;
-    public static ChessPosition startPos;
-    public static Collection<ChessMove> highlightPos = new ArrayList<>();
-    public static Collection<ChessPosition> highlight = new ArrayList<>();
+    public boolean blackView = false;
+    public ChessPosition startPos;
+    public Collection<ChessMove> highlightPos = new ArrayList<>();
+    public Collection<ChessPosition> highlight = new ArrayList<>();
     //IF YOU DON'T WANT TO HIGHLIGHT, PUT IN CHESSPOSITION(0,0)
 
     public DrawBoard(boolean blackPlayer, ChessGame game, ChessPosition startPos) {
-        if (blackPlayer){
-            blackView = true;
-        }
+        blackView = blackPlayer;
         if (game == null){
             game = new ChessGame();
         }
@@ -56,7 +54,7 @@ public class DrawBoard {
 
     }
 
-    private static void drawLetters(PrintStream out) {
+    private void drawLetters(PrintStream out) {
         String[] headers;
         setBlack(out);
         if (blackView == false) {
@@ -93,7 +91,7 @@ public class DrawBoard {
         setBlack(out);
     }
 
-    private static void drawChessBoard(PrintStream out, ChessBoard game) {
+    private void drawChessBoard(PrintStream out, ChessBoard game) {
         String[] rows;
         if (blackView){
             rows = new String[]{" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", "   ", "   "};
@@ -138,7 +136,7 @@ public class DrawBoard {
         }
         return "error";
     }
-    private static void drawRowOfSquares(PrintStream out, ChessBoard game, Integer row) {
+    private void drawRowOfSquares(PrintStream out, ChessBoard game, Integer row) {
 
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {

@@ -35,7 +35,7 @@ public class LoggedOutClient {
                 ServerFacade serv = new ServerFacade(serverURL);
                 Auth auth = serv.login(username, password);
                 if (!auth.authToken().isEmpty()){
-                    new LoggedInClient(serverURL, auth);
+                    new LoggedInClient(serverURL, auth, scanner);
                 } else {
                     System.out.print("Error: Unauthorized please try again or register\n");
                 }
@@ -52,7 +52,7 @@ public class LoggedOutClient {
                 ServerFacade serv = new ServerFacade(serverURL);
                 Auth auth = serv.register(username, password, email);
                 if (!auth.authToken().isEmpty()){
-                    new LoggedInClient(serverURL,auth);
+                    new LoggedInClient(serverURL,auth,scanner);
                 } else {
                     System.out.print("Error: user already exists\n");
                 }

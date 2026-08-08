@@ -14,13 +14,16 @@ import java.util.Scanner;
 
 public class PlayingClient {
 
-    private static String helpMessage = "Options (not case sensative):\n" +
+    private static String helpMessage =
+            "_________________________________________\n" +
+            "Options (not case sensative):\n" +
             "Redraw the board: 'redraw'\n" +
             "Resign: 'resign'\n" +
             "Make a move: 'move' <start position> <end position> (example of position: A1)\n" +
             "Leave game: 'leave'\n" +
             "Highlight Legal Moves: 'highlight' <position>\n" +
-            "Help remembering commands: 'help'\n";
+            "Help remembering commands: 'help'\n" +
+            "_________________________________________\n";
     private DrawBoard drawBoard;
     private ChessPosition noHighlight = new ChessPosition(0,0);
 
@@ -51,28 +54,30 @@ public class PlayingClient {
         ws.connect(auth.authToken(),gamePlayID);
         if(playerColor.toLowerCase().equals("black")) {
             isBlack = true;
+            //new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
+        } /*else {
             new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
-        } else {
-            new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
-        }
+        }*/
         Scanner scanner = new Scanner(System.in);
-        String playingPrompt = "GAME >>";//Change GAME to be the game name?
+        String playingPrompt = "GAME >> ";//Change GAME to be the game name?
         var command = "";
         //set drawBoard = new DrawBoard(isBlack, getOneGame());
         while (!command.equals("leave")) {
-            System.out.print(playingPrompt);
             String line = scanner.nextLine();
             command = line.toLowerCase();
             if (command.equals("help")) {
                 System.out.print(helpMessage);
+                System.out.print(playingPrompt);
             } else if (command.equals("resign")){
                 System.out.print("Type y to confirm resignation");
                 String confirm = scanner.nextLine().toLowerCase();
                 if (confirm.equals("y")) {
                     ws.resign(auth.authToken(), gamePlayID);
                 }
+                System.out.print(playingPrompt);
             } else if (command.equals("redraw")){
                 new DrawBoard(isBlack, ws.getGameBoard(), noHighlight);
+                System.out.print(playingPrompt);
             } else if (command.equals("highlight")){
                 System.out.print("Highlight position: ");
                 String highPos = scanner.nextLine();
@@ -82,7 +87,13 @@ public class PlayingClient {
                 }
                 ChessPosition highlightHere = inputToPosition(highPos);
                 new DrawBoard(isBlack, ws.getGameBoard(), highlightHere);
+                System.out.print(playingPrompt);
             } else if (command.equals("move")){
+                boolean isBlack = ws.getGameBoard().getTeamTurn() == ChessGame.TeamColor.BLACK;
+                if (playerColor.equalsIgnoreCase("black") != isBlack){
+                    System.out.println("Error: not your turn");
+                    continue;
+                }
                 System.out.print("Piece position: ");
                 String startPos = scanner.nextLine().toLowerCase();
                 if (!testInput(startPos)){
@@ -126,10 +137,12 @@ public class PlayingClient {
                 }
                 ChessMove move = new ChessMove(startpos,endpos,promoPiece);
                 ws.movePiece(auth.authToken(), gamePlayID, move);
-            } else if (!command.equals("leave")) {
+            } else if (command.equals("leave")) {
+                ws.leave(auth.authToken(),gamePlayID);
+            } else {
                 System.out.print("Error: not a command, type 'help' to find a list of valid commands\n");
+                System.out.print(playingPrompt);
             }
         }
-        ws.leave(auth.authToken(),gamePlayID);
     }
 }

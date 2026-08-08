@@ -47,7 +47,7 @@ public class ObservingClient {
         }
         return true;
     }
-    public ObservingClient(int gamePlayID, Auth auth, ServerFacade serv, WebSocketFacade ws) {
+    public ObservingClient(int gamePlayID, Auth auth, ServerFacade serv, WebSocketFacade ws, Scanner mainScanner) {
 
         System.out.print(helpMessage);
         ws.connect(auth.authToken(),gamePlayID);
@@ -59,9 +59,9 @@ public class ObservingClient {
             }
         }
         game = ws.getGameBoard();
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = mainScanner;
         String playingPrompt = "GAME>> ";//Change GAME to be the game name?
-        var command = "";
+        String command = "";
         while (!command.equals("leave")) {
             String line = scanner.nextLine();
             command = line.toLowerCase();
@@ -82,10 +82,12 @@ public class ObservingClient {
                 ChessPosition highlightHere = inputToPosition(highPos);
                 new DrawBoard(false, ws.getGameBoard(), highlightHere);
                 System.out.print(playingPrompt);
-            } else if (!command.equals("leave")) {
+            } else if (command.equals("leave")){
+                ws.leave(auth.authToken(),gamePlayID);
+                break;
+            } else {
                 System.out.print("Error: not a game command, type 'help' to find a list of valid commands\n");
             }
         }
-        ws.leave(auth.authToken(),gamePlayID);
     }
 }

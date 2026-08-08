@@ -55,6 +55,7 @@ public class LoggedInClient {
             int id = 0;
             if (scanner.hasNextInt()) {
                 id = scanner.nextInt();
+                scanner.nextLine();
             } else {
                 System.out.println("Error: please enter the game number");
                 return 300;
@@ -71,7 +72,7 @@ public class LoggedInClient {
                 return 302;
             }
             int gameID = list.get(id).getGameID();
-            new ObservingClient(gameID, auth, serv, ws);
+            new ObservingClient(gameID, auth, serv, ws, scanner);
             return 0;
         } catch (NullPointerException n) {
             System.out.println("Please enter a valid game number");
@@ -79,8 +80,8 @@ public class LoggedInClient {
         }
     }
 
-    public LoggedInClient(String serverURL, Auth auth) {
-        Scanner scanner = new Scanner(System.in);
+    public LoggedInClient(String serverURL, Auth auth, Scanner mainScanner) {
+        Scanner scanner = mainScanner;
         String loggedInPrompt = "LOGGED IN>> ";
         var command = "";
         ServerFacade serv = new ServerFacade(serverURL);
